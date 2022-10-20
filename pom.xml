@@ -8,7 +8,7 @@
     <artifactId>SpringbootTest</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-<!--    这东西提供了有用的maven默认值-->
+<!--    这东西提供了有用的maven默认值  -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -26,6 +26,17 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+<!--        javaBean的简化开发-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+<!--     热更新        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
