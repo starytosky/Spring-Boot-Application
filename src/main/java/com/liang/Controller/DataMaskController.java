@@ -26,7 +26,7 @@ public class DataMaskController {
     @Autowired
     private IExecService execService;
 
-    @RequestMapping("/video")
+    @GetMapping("video")
     public Result localVideo(String md5Id) {
         log.info("离线视频脱敏");
         // 判断文件是否存在
@@ -43,8 +43,8 @@ public class DataMaskController {
 
     }
 
-    @PostMapping("/help")
-    public String getHelp(Pet pt) {
+    @GetMapping("help")
+    public String getHelp() {
         return "hello";
     }
 }
