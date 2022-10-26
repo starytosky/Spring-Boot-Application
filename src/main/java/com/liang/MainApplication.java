@@ -1,7 +1,9 @@
 package com.liang;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * @author by liang
@@ -12,7 +14,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication(scanBasePackages = "com.liang")
 public class MainApplication {
     public static void main(String[] args) {
-        SpringApplication.run(MainApplication.class,args);
+//        配置应用上下文
+        ConfigurableApplicationContext run = SpringApplication.run(MainApplication.class, args);
+
+        boolean tom = run.containsBean("tom");
+        System.out.println("容器中tom组件:" + tom);
+
+        boolean user1 = run.containsBean("user1");
+        System.out.println("容器中 user1 组件:" + user1);
+
+        boolean tomess = run.containsBean("tomess");
+        System.out.println("容器中 tomess 组件:" + tomess);
     }
 }
 
