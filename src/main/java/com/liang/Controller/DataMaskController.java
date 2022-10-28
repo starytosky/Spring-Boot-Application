@@ -1,6 +1,7 @@
 package com.liang.Controller;
 
 import com.liang.Bean.Pet;
+import com.liang.Bean.videoMask;
 import com.liang.common.util.Result;
 import com.liang.service.IExecService;
 import lombok.extern.java.Log;
@@ -8,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.File;
 
 /**
  * @author by liang
@@ -26,26 +29,46 @@ public class DataMaskController {
     @Autowired
     private IExecService execService;
 
-    @GetMapping("video")
-    public Result localVideo(String md5Id) {
+    @PostMapping("video")
+    public Result localVideo(@RequestBody videoMask videoMask) {
         log.info("离线视频脱敏");
-        // 判断文件是否存在
-        String isFile = execService.isFile(md5Id);
-        if(isFile.equals("")) {
-            return Result.build(500,"离线文件不存在");
-        }else {
-            if(execService.localVideoMask(md5Id)) {
-                return Result.ok("脱敏成功");
+        // 检查参数是否正确
+        boolean checkParameters = execService.checkParameters(videoMask.getModelList(), videoMask.getUseMethod());
+        if(checkParameters) {
+            // 判断文件是否存在
+            String isFile = execService.isFile(videoMask.getMd5Id());
+            if(isFile.equals("")) {
+                return Result.build(500,"离线文件不存在");
             }else {
-                return Result.build(500,"数据脱敏失败");
+                if(execService.localVideoMask(isFile, videoMask.getModelList(), videoMask.getUseMethod())) {
+                    return Result.ok("脱敏成功");
+                }else {
+                    return Result.build(500,"数据脱敏失败");
+                }
             }
+        }else {
+            return Result.build(500,"参数不正确");
         }
+
 
     }
 
     @GetMapping("help")
     public String getHelp() {
-        return "hello";
+        String fileDirPath = "D:\\uploadFiles\\0198c25790ad81c091d8d0e5c850a0ed";
+        File file = new File(fileDirPath);
+        File[] array = file.listFiles();
+        if(file.isDirectory() && array.length == 1) {
+            // 获取这个文件名字
+            if(array[0].isFile()) {
+                log.info("源视频文件地址" + fileDirPath + File.separator + array[0].getName());
+                return fileDirPath + File.separator + array[0].getName();
+            }else {
+                return "";
+            }
+        }else {
+            return "";
+        }
     }
 }
 

@@ -1,4 +1,6 @@
 package com.liang.common.util;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
@@ -7,6 +9,8 @@ import java.util.concurrent.TimeUnit;
  * @Package com.liang.common.util
  * @date 2022/10/25 15:56
  */
+
+@Slf4j // 注入日志类，可以使用 Log.info("打印内容"); 来打印内容
 public class ExecUtil {
     /**
      * Execute system command
@@ -19,21 +23,24 @@ public class ExecUtil {
      */
     public static String exec(String cmd,int timeOut) throws IOException, InterruptedException {
         Process p = Runtime.getRuntime().exec(cmd);
-        boolean res = p.waitFor(timeOut, TimeUnit.SECONDS);
-        if(!res) {
-            return "Time out";
-        }
+//        boolean res = p.waitFor(timeOut, TimeUnit.SECONDS);
+//        if(!res) {
+//            return "Time out";
+//        }
         InputStream inputStream = p.getInputStream();
         byte[] data = new byte[1024];
         String result = "";
-        while(inputStream.read(data) != -1) {
-            result += new String(data,"GBK");
-        }
+        log.info("python脚本返回结果" + result);
         if (result == "") {
+            int i = 0;
             InputStream errorStream = p.getErrorStream();
             while(errorStream.read(data) != -1) {
                 result += new String(data,"GBK");
+                i++;
             }
+//            if (i!=0) {
+//                return "false";
+//            }
         }
         return result;
     }
@@ -59,11 +66,17 @@ public class ExecUtil {
         while(inputStream.read(data) != -1) {
             result += new String(data,"GBK");
         }
+        log.info("python脚本返回结果" + result);
         if (result == "") {
+            int i = 0;
             InputStream errorStream = p.getErrorStream();
             while(errorStream.read(data) != -1) {
                 result += new String(data,"GBK");
+                i++;
             }
+//            if (i!=0) {
+//                return "false";
+//            }
         }
         return result;
     }

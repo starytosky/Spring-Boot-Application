@@ -11,8 +11,12 @@ public interface IExecService {
     // 判断文件是否存在
     String isFile(String md5Id);
 
+    // 判断传入的参数是否正确
+    Boolean checkParameters(String[] modelList,String useMethod);
+
     // 离线视频数据脱敏
-    boolean localVideoMask(String md5Id);
+    boolean localVideoMask(String md5Id,String[] modelList,String useMethod);
+
 
 
 }
