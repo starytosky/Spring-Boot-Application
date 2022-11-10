@@ -3,6 +3,10 @@ package com.liang.service.impl;
 import com.liang.common.util.ExecUtil;
 import com.liang.service.IExecService;
 import lombok.extern.slf4j.Slf4j;
+import org.bytedeco.javacpp.avcodec;
+import org.bytedeco.javacpp.opencv_core;
+import org.bytedeco.javacpp.opencv_imgcodecs;
+import org.bytedeco.javacv.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -10,9 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * @author liang
@@ -108,14 +110,108 @@ public class ExecServiceImpl implements IExecService {
             String res = ExecUtil.exec(cmdStr, 200);
 //            String res = ExecUtil.exec(str,200);
             log.info("脚本执行结果" + res);
-            if (res.equals("false") || res.equals("Time out")){
+            if (res.equals("false") || res.equals("Time out") || res.equals("")){
                 return false;
             }
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return true;
     }
+
+
+    @Override
+    public boolean liveVideoMask(String stream_url, Long times_sec, String out_file_path, String file_format, boolean is_audio) {
+
+        return true;
+    }
+
+
+//    @Override
+//    public boolean liveVideoMask(String stream_url, Long times_sec, String out_file_path, String file_format, boolean is_audio) {
+//        // 获取视频源
+//        FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(stream_url);
+//        FFmpegFrameRecorder recorder = null;
+//        try {
+//            // start中调用了一系列的解析操作
+//            grabber.start();
+//            Frame frame = grabber.grabImage();
+//            if (frame != null) {
+//                //保存到本地的文件
+//                File outFile = new File(out_file_path);
+//                // 如果文件不存在或者不是一个文件 则根据文件的路径创建一个文件
+//                if (out_file_path.isEmpty() || !outFile.exists() || outFile.isFile()) {
+//                    log.info("创建对应文件");
+//                    outFile.createNewFile();
+//                } else {
+//                    System.out.println("输出文件无法创建");
+//                    return false;
+//                }
+//                // 流媒体输出地址，分辨率（长，高），是否录制音频（0:不录制/1:录制）
+//                recorder = new FFmpegFrameRecorder(out_file_path, frame.imageWidth, frame.imageHeight, is_audio ? 1 : 0);
+//                recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);//直播流格式
+//                recorder.setFormat(file_format);//录制的视频格式
+//                recorder.setFrameRate(25);//帧数
+//
+//                recorder.start();//开始录制
+//                // 计算结束时间
+//                long endTime = System.currentTimeMillis() + times_sec * 1000;
+//                // 如果没有到录制结束时间并且获取到了下一帧则继续录制
+//                while ((System.currentTimeMillis() < endTime) && (frame != null)) {
+//                    recorder.record(frame);//录制
+//                    frame = grabber.grabFrame();//获取下一帧
+//                }
+//                recorder.record(frame);
+//            }
+//        } catch (FrameGrabber.Exception e) {
+//            e.printStackTrace();
+//        } catch (FrameRecorder.Exception e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            //停止录制
+//            if (grabber != null ) {
+//                try {
+//                    grabber.stop();
+//                } catch (FrameGrabber.Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            if (recorder != null) {
+//                try {
+//                    recorder.stop();
+//                } catch (FrameRecorder.Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            System.out.println("录制完成，录制时长：" + times_sec + "秒(0为没有限制录制时长)");
+//        }
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean readVideoFrame() {
+//        File file = new File("D:\\vodeiPredit\\20210528135144\\1001.mp4");
+//        OpenCVFrameConverter.ToMat cvCoreMat = new OpenCVFrameConverter.ToMat();
+//        try (FFmpegFrameGrabber fFmpegFrameGrabber = new FFmpegFrameGrabber(file);){
+//            fFmpegFrameGrabber.start();
+//            Frame frame = null;
+//            int frameNum = 0;
+//            //读取每帧视频
+//            while ((frame = fFmpegFrameGrabber.grabImage()) != null) {
+//                opencv_core.Mat mat = cvCoreMat.convertToMat(frame);
+//                //保存图片
+//                opencv_imgcodecs.imwrite("Frame"+frameNum+".jpg",mat);
+//                frameNum++;
+//            }
+//        } catch (FrameGrabber.Exception e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
+
 }

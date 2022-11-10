@@ -15,16 +15,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class MainApplication {
     public static void main(String[] args) {
 //        配置应用上下文
-        ConfigurableApplicationContext run = SpringApplication.run(MainApplication.class, args);
-
-        boolean tom = run.containsBean("tom");
-        System.out.println("容器中tom组件:" + tom);
-
-        boolean user1 = run.containsBean("user1");
-        System.out.println("容器中 user1 组件:" + user1);
-
-        boolean tomess = run.containsBean("tomess");
-        System.out.println("容器中 tomess 组件:" + tomess);
+        SpringApplication.run(MainApplication.class, args);
     }
 }
 

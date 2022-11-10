@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  * @date 2022/10/25 15:56
  */
 
-@Slf4j // 注入日志类，可以使用 Log.info("打印内容"); 来打印内容
+@Slf4j
 public class ExecUtil {
     /**
      * Execute system command
@@ -74,6 +74,7 @@ public class ExecUtil {
                 result += new String(data,"GBK");
                 i++;
             }
+            log.info("python脚本返回的错误信息");
 //            if (i!=0) {
 //                return "false";
 //            }
