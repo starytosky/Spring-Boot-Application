@@ -68,8 +68,21 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.83</version>
         </dependency>
+<!--         华为obs-->
+        <dependency>
+            <groupId>com.huaweicloud</groupId>
+            <artifactId>esdk-obs-java-bundle</artifactId>
+            <version>[3.21.11,)</version>
+        </dependency>
 
-<!--        redis 相关 -->
+<!--        华为mpc-->
+        <dependency>
+            <groupId>com.huaweicloud.sdk</groupId>
+            <artifactId>huaweicloud-sdk-mpc</artifactId>
+            <version>3.0.39-rc</version>
+        </dependency>
+
+        <!--        redis 相关 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
