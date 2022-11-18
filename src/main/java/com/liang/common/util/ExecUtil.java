@@ -23,24 +23,22 @@ public class ExecUtil {
      */
     public static String exec(String cmd,int timeOut) throws IOException, InterruptedException {
         Process p = Runtime.getRuntime().exec(cmd);
-//        boolean res = p.waitFor(timeOut, TimeUnit.SECONDS);
-//        if(!res) {
-//            return "Time out";
-//        }
+        boolean res = p.waitFor(timeOut, TimeUnit.SECONDS);
+        if(!res) {
+            return "Time out";
+        }
         InputStream inputStream = p.getInputStream();
         byte[] data = new byte[1024];
         String result = "";
+        while(inputStream.read(data) != -1) {
+            result += new String(data,"GBK");
+        }
         log.info("python脚本返回结果" + result);
         if (result == "") {
-            int i = 0;
             InputStream errorStream = p.getErrorStream();
             while(errorStream.read(data) != -1) {
                 result += new String(data,"GBK");
-                i++;
             }
-//            if (i!=0) {
-//                return "false";
-//            }
         }
         return result;
     }

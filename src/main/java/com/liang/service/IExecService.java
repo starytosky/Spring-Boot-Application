@@ -20,7 +20,9 @@ public interface IExecService {
 
 
     // 实时视频数据脱敏
-    boolean liveVideoMask(String rtspUrl, Long times_sec, String out_file_path, String file_format, boolean is_audio);
+    boolean liveVideoMask(String rtspUrl, Long times_sec, String out_file_path,String filename,String[] modelList,String useMethod);
+
+    boolean isRtmpStream(String rtspUrl);
 //
 //    // readVideoFrame
 //    boolean readVideoFrame();

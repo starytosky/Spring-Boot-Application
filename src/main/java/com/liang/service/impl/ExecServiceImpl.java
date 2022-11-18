@@ -1,8 +1,13 @@
 package com.liang.service.impl;
 
 import com.liang.common.util.ExecUtil;
+import com.liang.common.util.MpcUtil;
+import com.liang.common.util.ObsUtil;
 import com.liang.service.IExecService;
 import lombok.extern.slf4j.Slf4j;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.FrameGrabber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -11,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author liang
@@ -27,8 +34,11 @@ public class ExecServiceImpl implements IExecService {
     @Value("${uploadFolder}")
     private String uploadFolder;
 
-    @Value("${codePath}")
-    private String codePath;
+    @Value("${LocalCodePath}")
+    private String LocalCodePath;
+    
+    @Value("${LiveCodePath}")
+    private String LiveCodePath;
 
     // 算法允许传入的参数
     private static final String[] checkmodelList = {"person","plate","sign","qrcode","idcard","nake","all"};
@@ -83,14 +93,13 @@ public class ExecServiceImpl implements IExecService {
     public boolean localVideoMask(String videoPath,String[] modelList,String useMethod) {
 
         // 根据md5Id 和 uploadFolder 去找到对应的离线视频文件
-        String fileDirPath = videoPath;
-        File file = new File(fileDirPath);
+        File file = new File(videoPath);
         String outPath = "/home/ysjs3/java/output/" + file.getName();
-        log.info("原视频存放地址" + fileDirPath);
+        log.info("原视频存放地址" + videoPath);
         log.info("视频保存地址" + outPath);
-        log.info("代码地址" + codePath );
+        log.info("代码地址" + LocalCodePath );
         // String usecmd = "python /home/ysjs3/java/code/test.py -i /home/ysjs3/java/upfile/0198c25790ad81c091d8d0e5c850a0ed/person3.mp4 -o /home/ysjs3/java/output/person3.mp4 --model_list person --device cpu";
-        String[] std = new String[] {"python",codePath,"-i",fileDirPath,"-o",outPath,"--model_list"};
+        String[] std = new String[] {"python",LocalCodePath,"-i",videoPath,"-o",outPath,"--model_list"};
         // 计算出命令行需要的参数量
         int cmd_len = modelList.length + std.length + 2;
         String[] cmdStr = new String[cmd_len];
@@ -104,7 +113,6 @@ public class ExecServiceImpl implements IExecService {
         cmdStr[cmd_len -1] = useMethod;
         try {
             String res = ExecUtil.exec(cmdStr, 200);
-//            String res = ExecUtil.exec(str,200);
             log.info("脚本执行结果" + res);
             if (res.equals("false") || res.equals("Time out") || res.equals("")){
                 return false;
@@ -120,9 +128,72 @@ public class ExecServiceImpl implements IExecService {
 
 
     @Override
-    public boolean liveVideoMask(String stream_url, Long times_sec, String out_file_path, String file_format, boolean is_audio) {
+    public boolean liveVideoMask(String stream_url, Long times_sec, String out_file_path,String filename,String[] modelList,String useMethod) {
+        /*
+            1.启动python脚本
+            2.python脚本返回脱敏完成信息
+            3.调用obs接口将本地视频文件上传到华为云obs
+            4.上传完成后调用转码接口执行转码任务，执行转码，定时器获取转码任务状态，最后将转码情况写入数据库。
+            5.提供一个前端查询转码情况的接口，对接数据库
+         */
+        log.info(String.valueOf(times_sec));
+        String[] std = new String[] {"python",LiveCodePath,stream_url, out_file_path,String.valueOf(times_sec),filename};
+        try {
+            String res = ExecUtil.exec(std, 200);
+            log.info("脚本执行结果" + res);
+            if (res.equals("false") || res.equals("Time out") || res.equals("")){
+                return false;
+            }else {
+                String filePath = out_file_path + filename;
+                if(ObsUtil.exitBucket("idata-video")){
+                    // 这里上传视频可能会超时
+                    if(ObsUtil.uploadFile("idata-video",filename,filePath)) {
+                        Long trancoding = MpcUtil.createTranscodingTask("idata-video","idata-jia","cn-east-3",filename,"a/");
+                        if(trancoding != -1) {
+                            TimerTask task = new TimerTask() {
+                                public void run() {
+                                    String isStaus = MpcUtil.getTaskStatus(trancoding);
+                                    if (isStaus.equals("SUCCEEDED") || isStaus.equals("FAILED")) {
+                                        System.out.println("线程停止");
+                                        // 向数据库写入一条信息，表明转码完成。
+                                        // 这边执行一个函数
+                                        this.cancel();
+                                    }
+                                }
+                            };
+                            Timer time = new Timer();
+                            time.schedule(task,3000,10000);
+                            return true;
+                        }else return false;
+                    }
+                }
 
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return true;
+    }
+
+    @Override
+    public boolean isRtmpStream(String rtspUrl) {
+        FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(rtspUrl);
+        try {
+            // start中调用了一系列的解析操作
+            grabber.start();
+            Frame frame = grabber.grabImage();
+            if (frame != null) {
+                return true;
+            }else {
+                return false;
+            }
+        } catch (FrameGrabber.Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 

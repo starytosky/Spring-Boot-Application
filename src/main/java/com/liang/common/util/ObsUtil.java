@@ -47,7 +47,6 @@ public class ObsUtil {
     }
 
     public static boolean uploadFile(String bucketName,String objectname,String localFilePath) {
-
         try {
             PutObjectResult putObjectResult = obsClient.putObject(bucketName,objectname,new File(localFilePath));
             if(putObjectResult.getStatusCode() < 300) {

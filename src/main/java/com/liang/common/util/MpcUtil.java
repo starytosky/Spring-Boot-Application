@@ -173,7 +173,7 @@ public class MpcUtil {
                         .withInput(input)
                         .withOutput(output)
                         //设置转码模板，预置模板Id可以在MPC console页面“全局设置” - “预置模板”上查看 自适应 7000784
-                        .withTransTemplateId(Collections.singletonList(206))
+                        .withTransTemplateId(Collections.singletonList(208))
         );
         try {
             CreateTranscodingTaskResponse response = initMpcClient().createTranscodingTask(request);
@@ -263,7 +263,7 @@ public class MpcUtil {
     }
 
     // 获取转码任务状态--根据任务id
-    public static boolean getTaskStatus(Long taskId) {
+    public static String getTaskStatus(Long taskId) {
         //按单个TaskId查询任务，TaskId是转码请求响应中返回的任务ID
         ListTranscodingTaskRequest req = new ListTranscodingTaskRequest().withTaskId(Collections.singletonList(taskId));
         //发送请求
@@ -271,7 +271,7 @@ public class MpcUtil {
 //        System.out.println(JsonUtils.toJSON(listTranscodingTaskResponse));
         String status = String.valueOf(listTranscodingTaskResponse.getTaskArray().get(0).getStatus());
         System.out.println(status);
-        return true;
+        return status;
     }
 
 }

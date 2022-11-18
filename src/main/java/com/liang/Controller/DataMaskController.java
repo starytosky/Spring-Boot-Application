@@ -1,5 +1,6 @@
 package com.liang.Controller;
 
+import com.liang.Bean.LiveVideoMask;
 import com.liang.Bean.videoMask;
 import com.liang.common.util.Result;
 import com.liang.service.IExecService;
@@ -46,22 +47,23 @@ public class DataMaskController {
         }
     }
 
-    @GetMapping("LivevideoStreaming")
-    public Result liveVideo() {
+    @PostMapping("LivevideoStreaming")
+    public Result liveVideo(@RequestBody LiveVideoMask liveVideoMask) {
         String stream_url = "rtmp://media3.scctv.net/live/scctv_800";// 流地址
         Long times_sec = Long.valueOf(30);// 停止录制时长 0为不限制时长
-        String out_file_path = "D:\\uploadFiles\\outvideo\\test.mp4";//输出路径
-        String file_format = "mp4";//录制的文件格式
-        boolean is_audio = true;//是否录制声音
-        boolean isLive = execService.liveVideoMask(stream_url,times_sec,out_file_path,file_format,is_audio);
-        if (isLive) {
-            return Result.ok("脱敏成功");
-        }else return Result.build(500,"脱敏失败");
-    }
+        String out_file_path = "D:\\uploadFiles\\outvideo\\";//输出路径
+        String useMethod = "cpu";
+        // 保存的文件名
+        String filename = "test.mp4";
+        if(execService.isRtmpStream(liveVideoMask.getStream_url())) {
+            boolean isLive = execService.liveVideoMask(liveVideoMask.getStream_url(), liveVideoMask.getTimes_sec(), liveVideoMask.getOut_file_path(), liveVideoMask.getFilename(), liveVideoMask.getModelList(), liveVideoMask.getUseMethod());
+            if (isLive) {
+                return Result.ok("脱敏成功");
+            }else return Result.build(500,"脱敏失败");
+        }else {
+            return Result.build(500,"不正确的stream_url");
+        }
 
-    @GetMapping("help")
-    public String getHelp() {
-        return "hello";
     }
 }
 

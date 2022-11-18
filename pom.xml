@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
+            <version>1.18.24</version>
         </dependency>
 <!--     热更新        -->
         <dependency>
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>1.5.21</version>
+            <version>1.6.8</version>
         </dependency>
 <!-- 请求第三方接口-->
         <dependency>
@@ -66,7 +66,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.83</version>
+            <version>2.0.18</version>
         </dependency>
 <!--         华为obs-->
         <dependency>
@@ -82,16 +82,28 @@
             <version>3.0.39-rc</version>
         </dependency>
 
-        <!--        redis 相关 -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv</artifactId>
+            <version>1.4.3</version>
         </dependency>
-<!--        测试-->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>ffmpeg-platform</artifactId>
+            <version>4.0.2-1.4.3</version>
         </dependency>
+        <!--项目在本地window用FFmpeg-windows-x86_64，项目在Linux用FFmpeg-linux-x86_64-->
+        <dependency>
+            <groupId>com.github.hoary.ffmpeg</groupId>
+            <artifactId>FFmpeg-windows-x86_64</artifactId>
+            <version>2.0.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.hoary.ffmpeg</groupId>
+            <artifactId>FFmpeg-linux-x86_64</artifactId>
+            <version>2.0.1.1</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -100,14 +112,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
 <!--                打包的时候不要把这个自动提醒的东西打包进来-->
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.springframework.boot</groupId>
-                            <artifactId>spring-boot-configuration-processor</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
+
             </plugin>
         </plugins>
     </build>
