@@ -3,6 +3,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 /**
  * @author liang
@@ -31,15 +32,18 @@ public class ExecUtil {
         byte[] data = new byte[1024];
         String result = "";
         while(inputStream.read(data) != -1) {
-            result += new String(data,"GBK");
+            result += new String(data,StandardCharsets.UTF_8);
         }
         log.info("python脚本返回结果" + result);
-        if (result == "") {
-            InputStream errorStream = p.getErrorStream();
-            while(errorStream.read(data) != -1) {
-                result += new String(data,"GBK");
-            }
+        String errResult = "";
+        InputStream errorStream = p.getErrorStream();
+        while(errorStream.read(data) != -1) {
+            errResult += (new String(data, StandardCharsets.UTF_8));
         }
+        log.info("python脚本返回的错误信息" + errResult);
+//        if(!errResult.equals("")) {
+//            return "false";
+//        }
         return result;
     }
 
@@ -62,21 +66,18 @@ public class ExecUtil {
         byte[] data = new byte[1024];
         String result = "";
         while(inputStream.read(data) != -1) {
-            result += new String(data,"GBK");
+            result += new String(data,StandardCharsets.UTF_8);
         }
         log.info("python脚本返回结果" + result);
-        if (result == "") {
-            int i = 0;
-            InputStream errorStream = p.getErrorStream();
-            while(errorStream.read(data) != -1) {
-                result += new String(data,"GBK");
-                i++;
-            }
-            log.info("python脚本返回的错误信息");
-//            if (i!=0) {
-//                return "false";
-//            }
+        String errResult = "";
+        InputStream errorStream = p.getErrorStream();
+        while(errorStream.read(data) != -1) {
+            errResult += (new String(data, StandardCharsets.UTF_8));
         }
+        log.info("python脚本返回的错误信息" + errResult);
+//        if(!errResult.equals("")) {
+//            return "false";
+//        }
         return result;
     }
 //    public static void main(String [] args) {

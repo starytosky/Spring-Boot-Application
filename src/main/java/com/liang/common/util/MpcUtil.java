@@ -176,6 +176,7 @@ public class MpcUtil {
                         .withTransTemplateId(Collections.singletonList(208))
         );
         try {
+            log.info("创建转码任务");
             CreateTranscodingTaskResponse response = initMpcClient().createTranscodingTask(request);
             System.out.println("CreateTranscodingTaskResponse=" + response);
             return response.getTaskId().longValue();

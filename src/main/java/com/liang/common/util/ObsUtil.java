@@ -4,11 +4,12 @@ import com.obs.services.Log4j2Configurator;
 import com.obs.services.ObsClient;
 import com.obs.services.exception.ObsException;
 import com.obs.services.model.*;
+import lombok.extern.slf4j.Slf4j;
 
 
 import java.io.*;
 
-
+@Slf4j
 public class ObsUtil {
 
     static String endPoint = "https://obs.cn-east-3.myhuaweicloud.com";
@@ -48,8 +49,10 @@ public class ObsUtil {
 
     public static boolean uploadFile(String bucketName,String objectname,String localFilePath) {
         try {
+            log.info("上传文件");
             PutObjectResult putObjectResult = obsClient.putObject(bucketName,objectname,new File(localFilePath));
             if(putObjectResult.getStatusCode() < 300) {
+                log.info("上传文件成功");
                 return true;
             }else return false;
         }catch (ObsException e){

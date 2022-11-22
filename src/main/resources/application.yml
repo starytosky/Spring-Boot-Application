@@ -1,7 +1,38 @@
 spring:
+  application:
+    name: springboot-prometheus
   mvc:
 #    静态资源访问路径前缀
     static-path-pattern: /res/**
 #  静态资源访问目录
   resources:
     static-locations: [classpath:/hello/]
+server:
+  port: 8040
+  servlet:
+    session:
+      timeout: 43200
+
+# 配置监控相关
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # 打开 Prometheus 的 Web 访问 Path
+  endpoint:
+    prometheus: # 可以查看转换以后的数据格式
+      enabled: true
+    health:     # 可以查看更多的细节
+      show-details: always
+
+  metrics:    # 配置指标相关信息
+    export:
+      prometheus:
+        enabled: true
+
+
+uploadFolder: /home/ysjs3/java/upfile/
+# ??python????
+LocalCodePath : /home/ysjs3/java/code/test.py
+
+LiveCodePath: /home/ysjs3/java/code/getRtmp.py

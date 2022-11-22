@@ -1,9 +1,14 @@
 package com.liang;
 
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 
 /**
  * @author by liang
@@ -16,6 +21,11 @@ public class MainApplication {
     public static void main(String[] args) {
 //        配置应用上下文
         SpringApplication.run(MainApplication.class, args);
+    }
+
+    @Bean
+    MeterRegistryCustomizer<MeterRegistry> configurer(@Value("${spring.application.name}") String applicationName) {
+        return (registry) -> registry.config().commonTags("application",applicationName);
     }
 }
 

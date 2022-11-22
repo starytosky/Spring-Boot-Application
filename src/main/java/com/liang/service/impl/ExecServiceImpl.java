@@ -137,24 +137,41 @@ public class ExecServiceImpl implements IExecService {
             5.提供一个前端查询转码情况的接口，对接数据库
          */
         log.info(String.valueOf(times_sec));
-        String[] std = new String[] {"python",LiveCodePath,stream_url, out_file_path,String.valueOf(times_sec),filename};
+        String[] std = new String[] {"python",LiveCodePath,"-i",stream_url,"-o", out_file_path,"--time",String.valueOf(times_sec),"--filename",filename,"--model_list"};
+        // 计算出命令行需要的参数量
+        int cmd_len = modelList.length + std.length + 2;
+        String[] cmdStr = new String[cmd_len];
+        for (int i = 0; i < std.length; i++) {
+            cmdStr[i] = std[i];
+        }
+        for (int i = std.length; i < (std.length + modelList.length); i++) {
+            cmdStr[i] = modelList[i - std.length];
+        }
+        cmdStr[cmd_len -2] = "--device";
+        cmdStr[cmd_len -1] = useMethod;
         try {
-            String res = ExecUtil.exec(std, 200);
+            String res = ExecUtil.exec(cmdStr, 1000);
             log.info("脚本执行结果" + res);
             if (res.equals("false") || res.equals("Time out") || res.equals("")){
+                log.info("执行失败");
                 return false;
             }else {
-                String filePath = out_file_path + filename;
+                String filePath = out_file_path + filename + ".avi";
+                log.info("脱敏视频保存路径");
                 if(ObsUtil.exitBucket("idata-video")){
+                    log.info("obs桶存在");
                     // 这里上传视频可能会超时
-                    if(ObsUtil.uploadFile("idata-video",filename,filePath)) {
+                    String uploadFileName = filename + ".avi";
+                    if(ObsUtil.uploadFile("idata-video",uploadFileName,filePath)) {
                         Long trancoding = MpcUtil.createTranscodingTask("idata-video","idata-jia","cn-east-3",filename,"a/");
                         if(trancoding != -1) {
                             TimerTask task = new TimerTask() {
                                 public void run() {
                                     String isStaus = MpcUtil.getTaskStatus(trancoding);
                                     if (isStaus.equals("SUCCEEDED") || isStaus.equals("FAILED")) {
-                                        System.out.println("线程停止");
+                                        log.info("线程停止");
+                                        // 把转码后的视频下载回本地
+//                                        boolean download = ObsUtil.downloadFile("idata-jia",filename,out_file_path + filename);
                                         // 向数据库写入一条信息，表明转码完成。
                                         // 这边执行一个函数
                                         this.cancel();
