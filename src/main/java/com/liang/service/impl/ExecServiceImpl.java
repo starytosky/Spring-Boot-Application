@@ -130,6 +130,7 @@ public class ExecServiceImpl implements IExecService {
     @Override
     public boolean liveVideoMask(String stream_url, Long times_sec, String out_file_path,String filename,String[] modelList,String useMethod) {
         /*
+            异步操作，同一个类中调用异步方法不生效
             1.启动python脚本
             2.python脚本返回脱敏完成信息
             3.调用obs接口将本地视频文件上传到华为云obs
