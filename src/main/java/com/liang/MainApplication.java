@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * @author by liang
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 // 表示这是个springboot应用的入口
 // scanBasePackages 表示配置扫描文件的范围，在该目录下的文件会被自动扫描
 @SpringBootApplication(scanBasePackages = "com.liang")
+@EnableAsync
 public class MainApplication {
     public static void main(String[] args) {
 //        配置应用上下文

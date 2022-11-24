@@ -31,7 +31,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 public class MpcUtil {
@@ -162,7 +164,9 @@ public class MpcUtil {
         return token;
     }
 
-    public static Long createTranscodingTask(String inBucketName,String outBucketName,String location,String inObj,String outObj) {
+    public static Long createTranscodingTask(String inBucketName,String outBucketName,String location,String inObj,String outObj,String outFilename) {
+        List<String> outFilenames = new ArrayList<>();
+        outFilenames.add(outFilename);
         //设置转码输入视频地址
         ObsObjInfo input = new ObsObjInfo().withBucket(inBucketName).withLocation(location).withObject(inObj);
         //设置转码输出视频路径
@@ -172,8 +176,8 @@ public class MpcUtil {
                 = new CreateTranscodingTaskRequest().withBody(new CreateTranscodingReq()
                         .withInput(input)
                         .withOutput(output)
-                        //设置转码模板，预置模板Id可以在MPC console页面“全局设置” - “预置模板”上查看 自适应 7000784
-                        .withTransTemplateId(Collections.singletonList(208))
+                        //设置转码模板，预置模板Id可以在MPC console页面“全局设置” - “预置模板”上查看 自定义模板208
+                        .withTransTemplateId(Collections.singletonList(208)).withOutputFilenames(outFilenames)
         );
         try {
             log.info("创建转码任务");

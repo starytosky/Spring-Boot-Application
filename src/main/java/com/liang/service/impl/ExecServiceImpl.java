@@ -157,13 +157,29 @@ public class ExecServiceImpl implements IExecService {
                 return false;
             }else {
                 String filePath = out_file_path + filename + ".avi";
-                log.info("脱敏视频保存路径");
+                log.info("脱敏视频保存路径" + filePath);
+                File file = new File(filePath);
+                if (!file.exists() || !file.isFile()) {
+                    log.info("脱敏视频文件生成失败");
+                    return false;
+                }
+                Long fileSize = file.length();
                 if(ObsUtil.exitBucket("idata-video")){
                     log.info("obs桶存在");
                     // 这里上传视频可能会超时
                     String uploadFileName = filename + ".avi";
-                    if(ObsUtil.uploadFile("idata-video",uploadFileName,filePath)) {
-                        Long trancoding = MpcUtil.createTranscodingTask("idata-video","idata-jia","cn-east-3",filename,"a/");
+                    // 这边需要获取文件的大小来选择是普通上传还是分块上传
+                    boolean isupload = false;
+                    if(fileSize > 5 * 1024 * 1024L) {
+                        String uploadId = ObsUtil.InitiateMultipartUploadRequestTask("idata-video",uploadFileName);
+                        // 分块上传的同时进行了文件合并操作
+                        // 网络好使用异步上传 AsynFileUpload，不好使用分块上传 UploadPartFile
+                        isupload = ObsUtil.AsynFileUpload("idata-video",uploadFileName,uploadId,fileSize,filePath);
+                    }else {
+                        isupload = ObsUtil.uploadFile("idata-video",uploadFileName,filePath);
+                    }
+                    if(isupload) {
+                        Long trancoding = MpcUtil.createTranscodingTask("idata-video","idata-jia","cn-east-3",uploadFileName,"a/",filename);
                         if(trancoding != -1) {
                             TimerTask task = new TimerTask() {
                                 public void run() {
@@ -180,8 +196,12 @@ public class ExecServiceImpl implements IExecService {
                             };
                             Timer time = new Timer();
                             time.schedule(task,3000,10000);
+                            log.info("脱敏完成");
                             return true;
                         }else return false;
+                    }else {
+                        log.info("文件上传失败");
+                        return false;
                     }
                 }
 
