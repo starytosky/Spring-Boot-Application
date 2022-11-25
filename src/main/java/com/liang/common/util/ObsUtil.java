@@ -5,6 +5,8 @@ import com.obs.services.ObsClient;
 import com.obs.services.exception.ObsException;
 import com.obs.services.model.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 
 import java.io.*;
@@ -123,6 +125,7 @@ public class ObsUtil {
             return false;
         }
     }
+
 
     public static boolean AsynFileUpload(String bucketName,String objectname,String uploadId,Long TotalfileSize,String filePath) {
 

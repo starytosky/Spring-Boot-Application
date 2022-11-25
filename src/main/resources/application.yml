@@ -2,11 +2,21 @@ spring:
   application:
     name: springboot-prometheus
   mvc:
-#    静态资源访问路径前缀
+    # 静态资源访问路径前缀
     static-path-pattern: /res/**
-#  静态资源访问目录
+  # 静态资源访问目录
   resources:
     static-locations: [classpath:/hello/]
+  # mysql数据库连接
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/privacy?characterEncoding=utf-8&useSSL=false&serverTimezone=UTC
+    username: root
+    password: Jiaicecream1
+  #返回json的全局时间格式
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
 server:
   port: 8040
   servlet:
@@ -36,3 +46,10 @@ uploadFolder: /home/ysjs3/java/upfile/
 LocalCodePath : /home/ysjs3/java/code/test.py
 
 LiveCodePath: /home/ysjs3/java/code/getRtmp.py
+
+InBucketName: idata-video # 文件上传的桶名
+
+OutBucketName: idata-jia # 转码后保存的桶名
+
+HuaWeiLocation: cn-east-3 # 脱敏服务器标识
+

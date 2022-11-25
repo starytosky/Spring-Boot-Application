@@ -1,8 +1,9 @@
 package com.liang.Controller;
 
 import com.liang.Bean.LiveVideoMask;
-import com.liang.Bean.videoMask;
+import com.liang.Bean.LocalvideoMask;
 import com.liang.common.util.Result;
+import com.liang.service.DataMaskService;
 import com.liang.service.IExecService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,18 +26,21 @@ public class DataMaskController {
     @Autowired
     private IExecService execService;
 
+    @Autowired
+    private DataMaskService dataMaskService;
+
     @PostMapping("video")
-    public Result localVideo(@RequestBody videoMask videoMask) {
+    public Result localVideo(@RequestBody LocalvideoMask videoMask) {
         log.info("离线视频脱敏");
         // 检查参数是否正确
-        boolean checkParameters = execService.checkParameters(videoMask.getModelList(), videoMask.getUseMethod());
+        boolean checkParameters = dataMaskService.checkParameters(videoMask.getModelList(), videoMask.getUseMethod());
         if(checkParameters) {
             // 判断文件是否存在
-            String isFile = execService.isFile(videoMask.getMd5Id());
+            String isFile = dataMaskService.isFile(videoMask.getMd5Id());
             if(isFile.equals("")) {
                 return Result.build(500,"离线文件不存在");
             }else {
-                if(execService.localVideoMask(isFile, videoMask.getModelList(), videoMask.getUseMethod())) {
+                if(dataMaskService.localVideoMask(isFile, videoMask.getModelList(), videoMask.getUseMethod())) {
                     return Result.ok("脱敏成功");
                 }else {
                     return Result.build(500,"数据脱敏失败");
@@ -49,14 +53,8 @@ public class DataMaskController {
 
     @PostMapping("LivevideoStreaming")
     public Result liveVideo(@RequestBody LiveVideoMask liveVideoMask) {
-        String stream_url = "rtmp://media3.scctv.net/live/scctv_800";// 流地址
-        Long times_sec = Long.valueOf(30);// 停止录制时长 0为不限制时长
-        String out_file_path = "D:\\uploadFiles\\outvideo\\";//输出路径
-        String useMethod = "cpu";
-        // 保存的文件名
-        String filename = "test.mp4";
-        if(execService.isRtmpStream(liveVideoMask.getStream_url())) {
-            boolean isLive = execService.liveVideoMask(liveVideoMask.getStream_url(), liveVideoMask.getTimes_sec(), liveVideoMask.getOut_file_path(), liveVideoMask.getFilename(), liveVideoMask.getModelList(), liveVideoMask.getUseMethod());
+        if(dataMaskService.isRtmpStream(liveVideoMask.getStream_url())) {
+            boolean isLive = dataMaskService.liveVideoMask(liveVideoMask.getStream_url(), liveVideoMask.getTimes_sec(), liveVideoMask.getOut_file_path(), liveVideoMask.getFilename(), liveVideoMask.getModelList(), liveVideoMask.getUseMethod());
             if (isLive) {
                 return Result.ok("脱敏成功");
             }else return Result.build(500,"脱敏失败");

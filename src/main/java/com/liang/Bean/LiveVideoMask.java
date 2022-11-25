@@ -10,5 +10,4 @@ public class LiveVideoMask {
     private String filename;
     private String useMethod;
     private String[] modelList;
-
 }

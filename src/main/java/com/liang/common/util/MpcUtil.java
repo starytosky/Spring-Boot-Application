@@ -29,6 +29,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Slf4j
+@Component
 public class MpcUtil {
 
     public static MpcClient initMpcClient() {

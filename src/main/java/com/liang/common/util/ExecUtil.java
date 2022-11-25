@@ -1,9 +1,15 @@
 package com.liang.common.util;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 /**
  * @author liang
@@ -13,39 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class ExecUtil {
-    /**
-     * Execute system command
-     *
-     * @param cmd command
-     * @param timeOut time out
-     * @return the result
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public static String exec(String cmd,int timeOut) throws IOException, InterruptedException {
-        Process p = Runtime.getRuntime().exec(cmd);
-        boolean res = p.waitFor(timeOut, TimeUnit.SECONDS);
-        if(!res) {
-            return "Time out";
-        }
-        InputStream inputStream = p.getInputStream();
-        byte[] data = new byte[1024];
-        String result = "";
-        while(inputStream.read(data) != -1) {
-            result += new String(data,StandardCharsets.UTF_8);
-        }
-        log.info("python脚本返回结果" + result);
-        String errResult = "";
-        InputStream errorStream = p.getErrorStream();
-        while(errorStream.read(data) != -1) {
-            errResult += (new String(data, StandardCharsets.UTF_8));
-        }
-        log.info("python脚本返回的错误信息" + errResult);
-//        if(!errResult.equals("")) {
-//            return "false";
-//        }
-        return result;
-    }
 
     /**
      * Execute system command
@@ -56,9 +29,10 @@ public class ExecUtil {
      * @throws IOException
      * @throws InterruptedException
      */
-    public static String exec(String [] cmd ,int timeOut) throws IOException, InterruptedException {
+    public static String exec(String[] cmd, int timeOut) throws IOException, InterruptedException {
+        log.info("延迟三十秒");
         Process p = Runtime.getRuntime().exec(cmd);
-        boolean res = p.waitFor(timeOut, TimeUnit.SECONDS);
+        boolean res = p.waitFor(timeOut, TimeUnit.HOURS);
         if(!res) {
             return "Time out";
         }
