@@ -43,9 +43,9 @@ management:
 
 uploadFolder: /home/ysjs3/java/upfile/
 # ??python????
-LocalCodePath : /home/ysjs3/java/code/test.py
+LocalCodePath : /home/ysjs3/java/code/localVideoMask.py
 
-LiveCodePath: /home/ysjs3/java/code/getRtmp.py
+LiveCodePath: /home/ysjs3/java/code/liveVideoMask.py
 
 InBucketName: idata-video # 文件上传的桶名
 
