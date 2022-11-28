@@ -1,5 +1,9 @@
 package com.liang.service.impl;
 
+import com.liang.Bean.LiveVideoMask;
+import com.liang.Bean.LocalvideoMask;
+import com.liang.Dao.LiveVideoMaskDao;
+import com.liang.Dao.LocalVideoMaskDao;
 import com.liang.service.DataMaskService;
 import com.liang.service.IExecService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +16,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Timer;
 
 /**
  * @author liang
@@ -28,6 +34,12 @@ public class DataMaskServiceImpl implements DataMaskService {
 
     @Autowired
     private IExecService execService;
+
+    @Autowired
+    private LocalVideoMaskDao localVideoMaskDao;
+
+    @Autowired
+    private LiveVideoMaskDao liveVideoMaskDao;
 
     @Value("${uploadFolder}")
     private String uploadFolder;
@@ -45,23 +57,29 @@ public class DataMaskServiceImpl implements DataMaskService {
 
 
     @Override
-    public String isFile(String md5Id) {
+    public Boolean isFile(String videoPath) {
         // 去redis中找该md5Id是否存在 && 访问文件是否存在
 //        boolean isfile = redisTemplate.hasKey(md5Id);
-        String fileDirPath = uploadFolder + md5Id;
-        log.info("源文件存放目录",fileDirPath);
-        File file = new File(fileDirPath);
-        File[] array = file.listFiles();
-        if(file.isDirectory() && array.length == 1) {
-            // 获取这个文件名字
-            if(array[0].isFile()) {
-                log.info("源视频文件名称" + array[0].getName());
-                return fileDirPath + File.separator + array[0].getName();
-            }else {
-                return "";
-            }
+//        String fileDirPath = uploadFolder + md5Id;
+//        log.info("源文件存放目录",fileDirPath);
+//        File file = new File(fileDirPath);
+//        File[] array = file.listFiles();
+//        if(file.isDirectory() && array.length == 1) {
+//            // 获取这个文件名字
+//            if(array[0].isFile()) {
+//                log.info("源视频文件名称" + array[0].getName());
+//                return fileDirPath + File.separator + array[0].getName();
+//            }else {
+//                return "";
+//            }
+//        }else {
+//            return "";
+//        }
+        File file = new File(videoPath);
+        if(file.exists() && file.length() != 0) {
+            return true;
         }else {
-            return "";
+            return false;
         }
     }
 
@@ -88,35 +106,40 @@ public class DataMaskServiceImpl implements DataMaskService {
 
 
     @Override
-    public boolean localVideoMask(String videoPath,String[] modelList,String useMethod) {
-
-        // 根据md5Id 和 uploadFolder 去找到对应的离线视频文件
-        File file = new File(videoPath);
-        String outPath = "/home/ysjs3/java/output/" + file.getName();
-        log.info("原视频存放地址" + videoPath);
-        log.info("视频保存地址" + outPath);
+    public boolean localVideoMask(LocalvideoMask localvideoMask) {
+        log.info("原视频存放地址" + localvideoMask.getVideoPath());
+        log.info("视频保存地址" + localvideoMask.getMaskPath());
         log.info("代码地址" + LocalCodePath );
         // String usecmd = "python /home/ysjs3/java/code/test.py -i /home/ysjs3/java/upfile/0198c25790ad81c091d8d0e5c850a0ed/person3.mp4 -o /home/ysjs3/java/output/person3.mp4 --model_list person --device cpu";
-        String[] std = new String[] {"python",LocalCodePath,"-i",videoPath,"-o",outPath,"--model_list"};
+        String[] std = new String[] {"python",LocalCodePath,"-i",localvideoMask.getVideoPath(),"-o",localvideoMask.getMaskPath(),"--model_list"};
         // 计算出命令行需要的参数量
-        int cmd_len = modelList.length + std.length + 2;
+        int cmd_len = localvideoMask.getModelList().length + std.length + 2;
+        String model = "";
         String[] cmdStr = new String[cmd_len];
         for (int i = 0; i < std.length; i++) {
             cmdStr[i] = std[i];
         }
-        for (int i = std.length; i < (std.length + modelList.length); i++) {
-            cmdStr[i] = modelList[i - std.length];
+        for (int i = std.length; i < (std.length + localvideoMask.getModelList().length); i++) {
+            cmdStr[i] = localvideoMask.getModelList()[i - std.length];
+            model = model + localvideoMask.getModelList()[i - std.length] + ",";
         }
         cmdStr[cmd_len -2] = "--device";
-        cmdStr[cmd_len -1] = useMethod;
+        cmdStr[cmd_len -1] = localvideoMask.getUseMethod();
+        localvideoMask.setModel(model);
+        Date timer = new Date();
+        log.info("任务执行开启时间" + timer);
+        localvideoMask.setStartTime(timer);
+        localvideoMask.setTaskStatus(0);
+        // 向数据库新增数据
+        localVideoMaskDao.insert(localvideoMask);
         // 执行异步操作
-        execService.localVideoMask(cmdStr);
+        execService.localVideoMask(cmdStr,localvideoMask);
         return true;
     }
 
 
     @Override
-    public boolean liveVideoMask(String stream_url, Long times_sec, String out_file_path,String filename,String[] modelList,String useMethod) {
+    public boolean liveVideoMask(LiveVideoMask liveVideoMask) {
         /*
             异步操作，同一个类中调用异步方法不生效
             1.启动python脚本
@@ -125,21 +148,29 @@ public class DataMaskServiceImpl implements DataMaskService {
             4.上传完成后调用转码接口执行转码任务，执行转码，定时器获取转码任务状态，最后将转码情况写入数据库。
             5.提供一个前端查询转码情况的接口，对接数据库
          */
-        log.info(String.valueOf(times_sec));
-        String[] std = new String[] {"python",LiveCodePath,"-i",stream_url,"-o", out_file_path,"--time",String.valueOf(times_sec),"--filename",filename,"--model_list"};
+        log.info(String.valueOf(liveVideoMask.getTimes_sec()));
+        String[] std = new String[] {"python",LiveCodePath,"-i",liveVideoMask.getStreamUrl(),"-o", liveVideoMask.getOutFilePath(),"--time",String.valueOf(liveVideoMask.getTimes_sec()),"--filename", liveVideoMask.getOutFilename(),"--model_list"};
         // 计算出命令行需要的参数量
-        int cmd_len = modelList.length + std.length + 2;
+        int cmd_len = liveVideoMask.getModelList().length + std.length + 2;
+        String model = "";
         String[] cmdStr = new String[cmd_len];
         for (int i = 0; i < std.length; i++) {
             cmdStr[i] = std[i];
         }
-        for (int i = std.length; i < (std.length + modelList.length); i++) {
-            cmdStr[i] = modelList[i - std.length];
+        for (int i = std.length; i < (std.length + liveVideoMask.getModelList().length); i++) {
+            cmdStr[i] = liveVideoMask.getModelList()[i - std.length];
+            model = model + liveVideoMask.getModelList()[i - std.length] + ",";
         }
         cmdStr[cmd_len -2] = "--device";
-        cmdStr[cmd_len -1] = useMethod;
+        cmdStr[cmd_len -1] = liveVideoMask.getUseMethod();
+        // 向数据库插入数据
+        liveVideoMask.setModel(model);
+        Date timer = new Date();
+        liveVideoMask.setStartTime(timer);
+        liveVideoMask.setTaskStatus(0);
+        liveVideoMaskDao.insert(liveVideoMask);
         // 执行异步操作
-        execService.liveVideoMask(cmdStr,out_file_path,filename);
+        execService.liveVideoMask(cmdStr,liveVideoMask);
         return true;
     }
 

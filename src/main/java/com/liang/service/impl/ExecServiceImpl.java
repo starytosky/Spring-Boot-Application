@@ -1,5 +1,7 @@
 package com.liang.service.impl;
 
+import com.liang.Bean.LiveVideoMask;
+import com.liang.Bean.LocalvideoMask;
 import com.liang.common.util.ExecUtil;
 import com.liang.common.util.MpcUtil;
 import com.liang.common.util.ObsUtil;
@@ -32,7 +34,7 @@ public class ExecServiceImpl implements IExecService {
 
     @Override
     @Async
-    public void localVideoMask(String[] cmdStr) {
+    public void localVideoMask(String[] cmdStr, LocalvideoMask localvideoMask) {
         try {
             String res = ExecUtil.exec(cmdStr, 200);
             log.info("脚本执行结果" + res);
@@ -47,7 +49,7 @@ public class ExecServiceImpl implements IExecService {
 
     @Override
     @Async
-    public void liveVideoMask(String[] cmdStr,String out_file_path,String filename) {
+    public void liveVideoMask(String[] cmdStr, LiveVideoMask liveVideoMask) {
             // 这边执行异步上传文件操作
             try {
                 String res = ExecUtil.exec(cmdStr, 1000);
@@ -56,18 +58,18 @@ public class ExecServiceImpl implements IExecService {
                     log.info("执行失败");
 
                 } else {
-                    String filePath = out_file_path + filename + ".avi";
+                    String filePath = liveVideoMask.getOutFilePath() + liveVideoMask.getOutFilename() + ".avi";
                     log.info("脱敏视频保存路径" + filePath);
                     File file = new File(filePath);
                     if (!file.exists() || !file.isFile()) {
                         log.info("脱敏视频文件生成失败");
 
                     }
-                    Long fileSize = file.length();
+                    long fileSize = file.length();
                     if (ObsUtil.exitBucket(InBucketName)) {
                         log.info("obs桶存在");
                         // 这里上传视频可能会超时
-                        String uploadFileName = filename + ".avi";
+                        String uploadFileName = liveVideoMask.getOutFilename() + ".avi";
                         // 这边需要获取文件的大小来选择是普通上传还是分块上传
                         boolean isupload = false;
                         if (fileSize > 5 * 1024 * 1024L) {
@@ -79,7 +81,7 @@ public class ExecServiceImpl implements IExecService {
                             isupload = ObsUtil.uploadFile(InBucketName, uploadFileName, filePath);
                         }
                         if (isupload) {
-                            Long trancoding = MpcUtil.createTranscodingTask(InBucketName, OutBucketName, HuaWeiLocation, uploadFileName, "a/", filename);
+                            Long trancoding = MpcUtil.createTranscodingTask(InBucketName, OutBucketName, HuaWeiLocation, uploadFileName, "a/", liveVideoMask.getOutFilename());
                             if (trancoding != -1) {
                                 TimerTask task = new TimerTask() {
                                     public void run() {

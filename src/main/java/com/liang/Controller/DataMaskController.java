@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 /**
  * @author by liang
  * @date : 2022-10-19 14:08
@@ -31,16 +33,15 @@ public class DataMaskController {
 
     @PostMapping("video")
     public Result localVideo(@RequestBody LocalvideoMask videoMask) {
-        log.info("离线视频脱敏");
         // 检查参数是否正确
         boolean checkParameters = dataMaskService.checkParameters(videoMask.getModelList(), videoMask.getUseMethod());
         if(checkParameters) {
             // 判断文件是否存在
-            String isFile = dataMaskService.isFile(videoMask.getMd5Id());
-            if(isFile.equals("")) {
+            Boolean isFile = dataMaskService.isFile(videoMask.getVideoPath());
+            if(!isFile) {
                 return Result.build(500,"离线文件不存在");
             }else {
-                if(dataMaskService.localVideoMask(isFile, videoMask.getModelList(), videoMask.getUseMethod())) {
+                if(dataMaskService.localVideoMask(videoMask)) {
                     return Result.ok("脱敏成功");
                 }else {
                     return Result.build(500,"数据脱敏失败");
@@ -53,8 +54,8 @@ public class DataMaskController {
 
     @PostMapping("LivevideoStreaming")
     public Result liveVideo(@RequestBody LiveVideoMask liveVideoMask) {
-        if(dataMaskService.isRtmpStream(liveVideoMask.getStream_url())) {
-            boolean isLive = dataMaskService.liveVideoMask(liveVideoMask.getStream_url(), liveVideoMask.getTimes_sec(), liveVideoMask.getOut_file_path(), liveVideoMask.getFilename(), liveVideoMask.getModelList(), liveVideoMask.getUseMethod());
+        if(dataMaskService.isRtmpStream(liveVideoMask.getStreamUrl())) {
+            boolean isLive = dataMaskService.liveVideoMask(liveVideoMask);
             if (isLive) {
                 return Result.ok("脱敏成功");
             }else return Result.build(500,"脱敏失败");

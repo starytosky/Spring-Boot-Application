@@ -1,5 +1,8 @@
 package com.liang.service;
 
+import com.liang.Bean.LiveVideoMask;
+import com.liang.Bean.LocalvideoMask;
+
 /**
  * @author liang
  * @Package com.liang.service
@@ -7,8 +10,8 @@ package com.liang.service;
  */
 public interface IExecService {
 
-    public void localVideoMask(String[] cmdStr);
+    public void localVideoMask(String[] cmdStr, LocalvideoMask localvideoMask);
 
-    public void liveVideoMask(String[] cmdStr,String out_file_path,String filename);
+    public void liveVideoMask(String[] cmdStr, LiveVideoMask liveVideoMask);
 
 }

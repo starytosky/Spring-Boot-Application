@@ -1,21 +1,24 @@
 package com.liang.service;
 
+import com.liang.Bean.LiveVideoMask;
+import com.liang.Bean.LocalvideoMask;
+
 public interface DataMaskService {
 
 
     // 判断文件是否存在
-    String isFile(String md5Id);
+    Boolean isFile(String md5Id);
 
     // 判断传入的参数是否正确
     Boolean checkParameters(String[] modelList,String useMethod);
 
     // 离线视频数据脱敏
-    boolean localVideoMask(String md5Id,String[] modelList,String useMethod);
+    boolean localVideoMask(LocalvideoMask localvideoMask);
 
 
 
     // 实时视频数据脱敏
-    boolean liveVideoMask(String rtspUrl, Long times_sec, String out_file_path,String filename,String[] modelList,String useMethod);
+    boolean liveVideoMask(LiveVideoMask liveVideoMask);
 
     boolean isRtmpStream(String rtspUrl);
 //
