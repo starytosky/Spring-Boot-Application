@@ -3,6 +3,8 @@ package com.liang.service;
 import com.liang.Bean.LiveVideoMask;
 import com.liang.Bean.LocalvideoMask;
 
+import java.io.IOException;
+
 public interface DataMaskService {
 
 
@@ -18,7 +20,7 @@ public interface DataMaskService {
 
 
     // 实时视频数据脱敏
-    boolean liveVideoMask(LiveVideoMask liveVideoMask);
+    boolean liveVideoMask(LiveVideoMask liveVideoMask) throws IOException;
 
     boolean isRtmpStream(String rtspUrl);
 //

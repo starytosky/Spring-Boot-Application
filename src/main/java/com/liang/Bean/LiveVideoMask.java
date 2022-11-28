@@ -6,10 +6,12 @@ import java.util.Date;
 
 @Data
 public class LiveVideoMask {
+    private Integer liveTaskId;
     private Integer userId;
     private String streamUrl;
     private String outFilePath;
     private String outFilename;
+    private String obsPath;
     private Integer taskStatus;
     private String useMethod;
     private String model;

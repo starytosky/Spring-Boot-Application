@@ -4,6 +4,7 @@ import com.liang.Bean.LiveVideoMask;
 import com.liang.Bean.LocalvideoMask;
 import com.liang.Dao.LiveVideoMaskDao;
 import com.liang.Dao.LocalVideoMaskDao;
+import com.liang.common.util.ObsUtil;
 import com.liang.service.DataMaskService;
 import com.liang.service.IExecService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Timer;
@@ -49,6 +54,9 @@ public class DataMaskServiceImpl implements DataMaskService {
     
     @Value("${LiveCodePath}")
     private String LiveCodePath;
+
+    @Value("${InBucketName}")
+    private String InBucketName;
 
     // 算法允许传入的参数
     private static final String[] checkmodelList = {"person","plate","sign","qrcode","idcard","nake","all"};
@@ -130,8 +138,11 @@ public class DataMaskServiceImpl implements DataMaskService {
         log.info("任务执行开启时间" + timer);
         localvideoMask.setStartTime(timer);
         localvideoMask.setTaskStatus(0);
+        // 0: 存在，1：删除
+        localvideoMask.setIsdelete(0);
         // 向数据库新增数据
-        localVideoMaskDao.insert(localvideoMask);
+        int x = localVideoMaskDao.insert(localvideoMask);
+        log.info("数据库返回信息" + localvideoMask.getLocalTaskId());
         // 执行异步操作
         execService.localVideoMask(cmdStr,localvideoMask);
         return true;
@@ -139,7 +150,7 @@ public class DataMaskServiceImpl implements DataMaskService {
 
 
     @Override
-    public boolean liveVideoMask(LiveVideoMask liveVideoMask) {
+    public boolean liveVideoMask(LiveVideoMask liveVideoMask) throws IOException {
         /*
             异步操作，同一个类中调用异步方法不生效
             1.启动python脚本
@@ -148,7 +159,16 @@ public class DataMaskServiceImpl implements DataMaskService {
             4.上传完成后调用转码接口执行转码任务，执行转码，定时器获取转码任务状态，最后将转码情况写入数据库。
             5.提供一个前端查询转码情况的接口，对接数据库
          */
-        log.info(String.valueOf(liveVideoMask.getTimes_sec()));
+        // 在当前的数量上+1，代表新任务的文件夹
+        Integer user_task_count = liveVideoMaskDao.GetUserTaskCountByUserId(liveVideoMask) + 1;
+
+        String obsPath = liveVideoMask.getUserId() + "/" + user_task_count + "/";
+        String live_user_task_path = uploadFolder + obsPath;
+        // 创建文件夹
+        Path path = Paths.get(live_user_task_path);
+        Path pathCreate = Files.createDirectories(path);
+        log.info("文件夹");
+        liveVideoMask.setOutFilePath(live_user_task_path);
         String[] std = new String[] {"python",LiveCodePath,"-i",liveVideoMask.getStreamUrl(),"-o", liveVideoMask.getOutFilePath(),"--time",String.valueOf(liveVideoMask.getTimes_sec()),"--filename", liveVideoMask.getOutFilename(),"--model_list"};
         // 计算出命令行需要的参数量
         int cmd_len = liveVideoMask.getModelList().length + std.length + 2;
@@ -163,12 +183,18 @@ public class DataMaskServiceImpl implements DataMaskService {
         }
         cmdStr[cmd_len -2] = "--device";
         cmdStr[cmd_len -1] = liveVideoMask.getUseMethod();
+
+        // 向obs创建文件夹
+        ObsUtil.CreateFolder(InBucketName,obsPath);
         // 向数据库插入数据
+        liveVideoMask.setObsPath(obsPath);
         liveVideoMask.setModel(model);
         Date timer = new Date();
         liveVideoMask.setStartTime(timer);
         liveVideoMask.setTaskStatus(0);
+        liveVideoMask.setIsdelete(0);
         liveVideoMaskDao.insert(liveVideoMask);
+        log.info("数据库返回信息" + liveVideoMask.getLiveTaskId());
         // 执行异步操作
         execService.liveVideoMask(cmdStr,liveVideoMask);
         return true;

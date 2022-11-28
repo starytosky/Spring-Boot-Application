@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -26,12 +27,9 @@ import java.util.Date;
 public class DataMaskController {
 
     @Autowired
-    private IExecService execService;
-
-    @Autowired
     private DataMaskService dataMaskService;
 
-    @PostMapping("video")
+    @PostMapping("localvideomask")
     public Result localVideo(@RequestBody LocalvideoMask videoMask) {
         // 检查参数是否正确
         boolean checkParameters = dataMaskService.checkParameters(videoMask.getModelList(), videoMask.getUseMethod());
@@ -42,7 +40,7 @@ public class DataMaskController {
                 return Result.build(500,"离线文件不存在");
             }else {
                 if(dataMaskService.localVideoMask(videoMask)) {
-                    return Result.ok("脱敏成功");
+                    return Result.ok("正在脱敏..");
                 }else {
                     return Result.build(500,"数据脱敏失败");
                 }
@@ -52,12 +50,12 @@ public class DataMaskController {
         }
     }
 
-    @PostMapping("LivevideoStreaming")
-    public Result liveVideo(@RequestBody LiveVideoMask liveVideoMask) {
+    @PostMapping("livevideomask")
+    public Result liveVideo(@RequestBody LiveVideoMask liveVideoMask) throws IOException {
         if(dataMaskService.isRtmpStream(liveVideoMask.getStreamUrl())) {
             boolean isLive = dataMaskService.liveVideoMask(liveVideoMask);
             if (isLive) {
-                return Result.ok("脱敏成功");
+                return Result.ok("正在脱敏..");
             }else return Result.build(500,"脱敏失败");
         }else {
             return Result.build(500,"不正确的stream_url");

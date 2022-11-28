@@ -57,6 +57,17 @@ public class ObsUtil {
         return  exists;
     }
 
+    /**
+     * 创建文件夹
+     * @param bucketName
+     * @return
+     */
+
+    public static boolean CreateFolder(String bucketName,String folderPath) {
+        obsClient.putObject(bucketName, folderPath, new ByteArrayInputStream(new byte[0]));
+        return true;
+    }
+
     /*
         分段上传任务
         1.初始化分段上传任务获取全局id

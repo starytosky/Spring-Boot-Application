@@ -30,7 +30,6 @@ public class ExecUtil {
      * @throws InterruptedException
      */
     public static String exec(String[] cmd, int timeOut) throws IOException, InterruptedException {
-        log.info("延迟三十秒");
         Process p = Runtime.getRuntime().exec(cmd);
         boolean res = p.waitFor(timeOut, TimeUnit.HOURS);
         if(!res) {
