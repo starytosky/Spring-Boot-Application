@@ -46,11 +46,10 @@ public class ExecServiceImpl implements IExecService {
     @Async
     public void localVideoMask(String[] cmdStr, LocalvideoMask localvideoMask) {
         try {
-            String res = ExecUtil.exec(cmdStr, 200);
+            boolean isexeclocal = ExecUtil.exec(cmdStr, 100);
             Date endTime = new Date();
             localvideoMask.setEndTime(endTime);
-            log.info("脚本执行结果" + res);
-            if (res.equals("false") || res.equals("Time out") || res.equals("")){
+            if (!isexeclocal){
                 // 向数据库写入信息
                 log.info("脚本执行出错");
                 localvideoMask.setTaskStatus(2);
@@ -70,12 +69,9 @@ public class ExecServiceImpl implements IExecService {
     public void liveVideoMask(String[] cmdStr, LiveVideoMask liveVideoMask) {
             // 这边执行异步上传文件操作
             try {
-                String res = ExecUtil.exec(cmdStr, 1000);
-                log.info("脚本执行结果" + res);
-                if (res.equals("false") || res.equals("Time out") || res.equals("")) {
-                    log.info("执行失败");
+                boolean isexeclive = ExecUtil.exec(cmdStr, 100);
+                if (!isexeclive) {
                     setTaskStatus(1,liveVideoMask);
-
                 } else {
                     String filePath = liveVideoMask.getOutFilePath() + liveVideoMask.getOutFilename() + ".avi";
                     log.info("脱敏视频保存路径" + filePath);

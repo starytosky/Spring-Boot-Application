@@ -105,7 +105,7 @@ public class DataMaskServiceImpl implements DataMaskService {
             if(!hset.contains(modelList[i]))
                 return false;
         }
-        if (useMethod.equals("cpu") || useMethod.equals("gpu")) {
+        if (useMethod.equals("cpu") || useMethod.equals("0")) {
             return true;
         }else {
             return false;

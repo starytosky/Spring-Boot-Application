@@ -29,29 +29,43 @@ public class ExecUtil {
      * @throws IOException
      * @throws InterruptedException
      */
-    public static String exec(String[] cmd, int timeOut) throws IOException, InterruptedException {
-        Process p = Runtime.getRuntime().exec(cmd);
-        boolean res = p.waitFor(timeOut, TimeUnit.HOURS);
-        if(!res) {
-            return "Time out";
-        }
-        InputStream inputStream = p.getInputStream();
-        byte[] data = new byte[1024];
-        String result = "";
-        while(inputStream.read(data) != -1) {
-            result += new String(data,StandardCharsets.UTF_8);
-        }
-        log.info("python脚本返回结果" + result);
-        String errResult = "";
-        InputStream errorStream = p.getErrorStream();
-        while(errorStream.read(data) != -1) {
-            errResult += (new String(data, StandardCharsets.UTF_8));
-        }
-        log.info("python脚本返回的错误信息" + errResult);
-//        if(!errResult.equals("")) {
-//            return "false";
+//    public static String exec(String[] cmd, int timeOut) throws IOException, InterruptedException {
+//        Process p = Runtime.getRuntime().exec(cmd);
+//        boolean res = p.waitFor(timeOut, TimeUnit.HOURS);
+//        if(!res) {
+//            return "Time out";
 //        }
-        return result;
+//        InputStream inputStream = p.getInputStream();
+//        byte[] data = new byte[1024];
+//        String result = "";
+//        while(inputStream.read(data) != -1) {
+//            result += new String(data,StandardCharsets.UTF_8);
+//        }
+//        log.info("python脚本返回结果" + result);
+//        String errResult = "";
+//        InputStream errorStream = p.getErrorStream();
+//        while(errorStream.read(data) != -1) {
+//            errResult += (new String(data, StandardCharsets.UTF_8));
+//        }
+//        log.info("python脚本返回的错误信息" + errResult);
+////        if(!errResult.equals("")) {
+////            return "false";
+////        }
+//        return result;
+//    }
+    public static boolean exec(String[] cmd, int timeOut) throws IOException, InterruptedException {
+
+        Process p = Runtime.getRuntime().exec(cmd);
+        new OutStream(p.getInputStream(),"INFO").start();
+        new OutStream(p.getErrorStream(),"Error").start();
+
+        // exitValue 为0表示正常终止
+        int exitValue = p.waitFor();
+        log.info(String.valueOf(exitValue));
+        if (exitValue != 0) {
+            return false;
+        }
+        return true;
     }
 //    public static void main(String [] args) {
 //        // test 1: ping
