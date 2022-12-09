@@ -5,6 +5,8 @@ package com.liang.service;
 
 import com.liang.Bean.FileChunkDTO;
 import com.liang.Bean.FileChunkResultDTO;
+import com.liang.Bean.FileUpload;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -44,4 +46,6 @@ public interface IUploadService {
      * @throws IOException
      */
     boolean mergeChunk(String identifier,String fileName,Integer totalChunks)throws IOException;
+
+    String uploadSmallFile(FileUpload fileUpload) throws IOException;
 }

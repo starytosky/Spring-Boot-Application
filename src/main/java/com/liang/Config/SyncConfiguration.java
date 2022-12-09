@@ -19,7 +19,7 @@ public class SyncConfiguration {
         taskExecutor.setMaxPoolSize(100);
         //缓存队列
         taskExecutor.setQueueCapacity(50);
-        //许的空闲时间,当超过了核心线程出之外的线程在空闲时间到达之后会被销毁
+        //允许的空闲时间,当超过了核心线程出之外的线程在空闲时间到达之后会被销毁
         taskExecutor.setKeepAliveSeconds(200);
         //异步方法内部线程名称
         taskExecutor.setThreadNamePrefix("async-");

@@ -2,13 +2,16 @@ package com.liang.Controller;
 
 import com.liang.Bean.FileChunkDTO;
 import com.liang.Bean.FileChunkResultDTO;
+import com.liang.Bean.FileUpload;
 import com.liang.common.util.Result;
 import com.liang.service.IUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @ProjectName UploaderController
@@ -19,7 +22,7 @@ import java.io.File;
  */
 @RestController
 @CrossOrigin
-@RequestMapping("upload")
+@RequestMapping("/upload")
 public class UploaderController {
 
     @Autowired
@@ -27,6 +30,18 @@ public class UploaderController {
 
     @Value("${uploadFolder}")
     private String uploadFolder;
+
+
+
+    @PostMapping("/upload")
+    public Result uploadFile(FileUpload fileUpload) throws IOException {
+        String filePath = uploadService.uploadSmallFile(fileUpload);
+        if (!filePath.equals("")) {
+            return Result.ok(filePath);
+        }else {
+            return Result.build(500,"上传失败");
+        }
+    }
 
     /**
      * 检查分片是否存在

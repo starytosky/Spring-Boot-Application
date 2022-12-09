@@ -20,6 +20,9 @@ public class Result<T> {
     @ApiModelProperty(value = "返回数据")
     private T data;
 
+    @ApiModelProperty(value = "数据量")
+    private Integer num;
+
     protected static <T> Result<T> build(T data) {
         Result<T> result = new Result<T>();
         if (data != null)
@@ -35,6 +38,14 @@ public class Result<T> {
         return result;
     }
 
+    public static <T> Result<T> build(T body,int num, ResultCodeEnum resultCodeEnum) {
+        Result<T> result = build(body);
+        result.setNum(num);
+        result.setCode(resultCodeEnum.getCode());
+        result.setMessage(resultCodeEnum.getMessage());
+        return result;
+    }
+
     public static <T> Result<T> build(Integer code, String message) {
         Result<T> result = build(null);
         result.setCode(code);
@@ -45,6 +56,12 @@ public class Result<T> {
 
     public static<T> Result<T> ok(T data){
         Result<T> result = build(data);
+        return build(data, ResultCodeEnum.SUCCESS);
+    }
+
+
+    private static <T> Result<T> build(T data, int num) {
+        Result<T> result = build(data,num);
         return build(data, ResultCodeEnum.SUCCESS);
     }
 }

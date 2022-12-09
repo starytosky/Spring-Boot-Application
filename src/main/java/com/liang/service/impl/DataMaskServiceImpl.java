@@ -1,9 +1,12 @@
 package com.liang.service.impl;
 
+import com.liang.Bean.CheckTask;
 import com.liang.Bean.LiveVideoMask;
-import com.liang.Bean.LocalvideoMask;
+import com.liang.Bean.LocalMask;
+import com.liang.Bean.MaskTask;
 import com.liang.Dao.LiveVideoMaskDao;
-import com.liang.Dao.LocalVideoMaskDao;
+import com.liang.Dao.LocalMaskDao;
+import com.liang.Dao.MaskTaskDao;
 import com.liang.common.util.ObsUtil;
 import com.liang.service.DataMaskService;
 import com.liang.service.IExecService;
@@ -23,7 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Timer;
+import java.util.List;
 
 /**
  * @author liang
@@ -41,10 +44,13 @@ public class DataMaskServiceImpl implements DataMaskService {
     private IExecService execService;
 
     @Autowired
-    private LocalVideoMaskDao localVideoMaskDao;
+    private LocalMaskDao localMaskDao;
 
     @Autowired
     private LiveVideoMaskDao liveVideoMaskDao;
+
+    @Autowired
+    private MaskTaskDao maskTaskDao;
 
     @Value("${uploadFolder}")
     private String uploadFolder;
@@ -114,12 +120,12 @@ public class DataMaskServiceImpl implements DataMaskService {
 
 
     @Override
-    public boolean localVideoMask(LocalvideoMask localvideoMask) {
-        log.info("原视频存放地址" + localvideoMask.getVideoPath());
+    public boolean localVideoMask(LocalMask localvideoMask) {
+        log.info("原视频存放地址" + localvideoMask.getOriginPath());
         log.info("视频保存地址" + localvideoMask.getMaskPath());
         log.info("代码地址" + LocalCodePath );
         // String usecmd = "python /home/ysjs3/java/code/test.py -i /home/ysjs3/java/upfile/0198c25790ad81c091d8d0e5c850a0ed/person3.mp4 -o /home/ysjs3/java/output/person3.mp4 --model_list person --device cpu";
-        String[] std = new String[] {"python",LocalCodePath,"-i",localvideoMask.getVideoPath(),"-o",localvideoMask.getMaskPath(),"--model_list"};
+        String[] std = new String[] {"python",LocalCodePath,"-i",localvideoMask.getOriginPath(),"-o",localvideoMask.getMaskPath(),"--model_list"};
         // 计算出命令行需要的参数量
         int cmd_len = localvideoMask.getModelList().length + std.length + 2;
         String model = "";
@@ -141,8 +147,8 @@ public class DataMaskServiceImpl implements DataMaskService {
         // 0: 存在，1：删除
         localvideoMask.setIsdelete(0);
         // 向数据库新增数据
-        int x = localVideoMaskDao.insert(localvideoMask);
-        log.info("数据库返回信息" + localvideoMask.getLocalTaskId());
+        int x = localMaskDao.insert(localvideoMask);
+        log.info("数据库返回信息" + localvideoMask.getTaskId());
         // 执行异步操作
         execService.localVideoMask(cmdStr,localvideoMask);
         return true;
@@ -194,7 +200,7 @@ public class DataMaskServiceImpl implements DataMaskService {
         liveVideoMask.setTaskStatus(0);
         liveVideoMask.setIsdelete(0);
         liveVideoMaskDao.insert(liveVideoMask);
-        log.info("数据库返回信息" + liveVideoMask.getLiveTaskId());
+        log.info("数据库返回信息" + liveVideoMask.getTaskId());
         // 执行异步操作
         execService.liveVideoMask(cmdStr,liveVideoMask);
         return true;
@@ -216,6 +222,39 @@ public class DataMaskServiceImpl implements DataMaskService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    // 根据userid，和任务类型id获取任务情况
+    @Override
+    public List<LiveVideoMask> getLiveTaskPosition(CheckTask checkTask) {
+        List<LiveVideoMask> liveVideoMaskList =  liveVideoMaskDao.GetUserTaskByUserId(checkTask);
+        return liveVideoMaskList;
+    }
+
+    @Override
+    public List<LocalMask> getLocalTaskPosition(CheckTask checkTask) {
+        List<LocalMask> localvideoMaskList =  localMaskDao.GetUserTaskByUserId(checkTask);
+        return localvideoMaskList;
+    }
+
+    @Override
+    public int deleteTask(Integer userId, Integer taskId, Integer typeId) {
+        if(typeId == 0) {
+            return localMaskDao.deleteTask(userId,taskId);
+        }else {
+            return liveVideoMaskDao.deleteTask(userId,taskId);
+        }
+    }
+
+    @Override
+    public int createMaskTask(MaskTask maskTask) {
+        return maskTaskDao.createMaskTask(maskTask);
+    }
+
+
+    @Override
+    public int updateMaskTask(MaskTask maskTask) {
+        return maskTaskDao.updateMaskTask(maskTask) ;
     }
 
 

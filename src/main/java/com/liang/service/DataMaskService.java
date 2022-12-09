@@ -1,9 +1,12 @@
 package com.liang.service;
 
+import com.liang.Bean.CheckTask;
 import com.liang.Bean.LiveVideoMask;
-import com.liang.Bean.LocalvideoMask;
+import com.liang.Bean.LocalMask;
+import com.liang.Bean.MaskTask;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface DataMaskService {
 
@@ -15,7 +18,7 @@ public interface DataMaskService {
     Boolean checkParameters(String[] modelList,String useMethod);
 
     // 离线视频数据脱敏
-    boolean localVideoMask(LocalvideoMask localvideoMask);
+    boolean localVideoMask(LocalMask localvideoMask);
 
 
 
@@ -23,6 +26,17 @@ public interface DataMaskService {
     boolean liveVideoMask(LiveVideoMask liveVideoMask) throws IOException;
 
     boolean isRtmpStream(String rtspUrl);
+
+    // 根据userid，和任务类型id获取任务情况
+    List<LiveVideoMask> getLiveTaskPosition(CheckTask checkTask);
+
+    List<LocalMask> getLocalTaskPosition(CheckTask checkTask);
+
+    int deleteTask(Integer userId,Integer taskId, Integer typeId);
+
+    int createMaskTask(MaskTask maskTask);
+
+    int updateMaskTask(MaskTask maskTask);
 //
 //    // readVideoFrame
 //    boolean readVideoFrame();

@@ -56,7 +56,8 @@ public class ExecUtil {
     public static boolean exec(String[] cmd, int timeOut) throws IOException, InterruptedException {
 
         Process p = Runtime.getRuntime().exec(cmd);
-        new OutStream(p.getInputStream(),"INFO").start();
+        OutStream outStream =  new OutStream(p.getInputStream(),"INFO");
+        outStream.start();
         new OutStream(p.getErrorStream(),"Error").start();
 
         // exitValue 为0表示正常终止

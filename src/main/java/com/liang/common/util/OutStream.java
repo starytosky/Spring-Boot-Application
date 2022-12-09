@@ -11,7 +11,7 @@ class OutStream extends Thread{
     InputStream is;
     String type;
 
-    public OutStream(InputStream is, String type) {
+    OutStream(InputStream is, String type) {
         this.is = is;
         this.type = type;
     }

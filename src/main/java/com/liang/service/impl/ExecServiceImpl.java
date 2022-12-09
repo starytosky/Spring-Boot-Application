@@ -1,13 +1,12 @@
 package com.liang.service.impl;
 
 import com.liang.Bean.LiveVideoMask;
-import com.liang.Bean.LocalvideoMask;
+import com.liang.Bean.LocalMask;
 import com.liang.Dao.LiveVideoMaskDao;
-import com.liang.Dao.LocalVideoMaskDao;
+import com.liang.Dao.LocalMaskDao;
 import com.liang.common.util.ExecUtil;
 import com.liang.common.util.MpcUtil;
 import com.liang.common.util.ObsUtil;
-import com.liang.service.DataMaskService;
 import com.liang.service.IExecService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ public class ExecServiceImpl implements IExecService {
 
 
     @Autowired
-    private LocalVideoMaskDao localVideoMaskDao;
+    private LocalMaskDao localMaskDao;
 
     @Autowired
     private LiveVideoMaskDao liveVideoMaskDao;
@@ -44,7 +43,7 @@ public class ExecServiceImpl implements IExecService {
 
     @Override
     @Async
-    public void localVideoMask(String[] cmdStr, LocalvideoMask localvideoMask) {
+    public void localVideoMask(String[] cmdStr, LocalMask localvideoMask) {
         try {
             boolean isexeclocal = ExecUtil.exec(cmdStr, 100);
             Date endTime = new Date();
@@ -53,11 +52,11 @@ public class ExecServiceImpl implements IExecService {
                 // 向数据库写入信息
                 log.info("脚本执行出错");
                 localvideoMask.setTaskStatus(2);
-                localVideoMaskDao.updateLocalVieoMaskById(localvideoMask);
+                localMaskDao.updateLocalVieoMaskById(localvideoMask);
             }else {
                 log.info("任务执行成功");
                 localvideoMask.setTaskStatus(1);
-                localVideoMaskDao.updateLocalVieoMaskById(localvideoMask);
+                localMaskDao.updateLocalVieoMaskById(localvideoMask);
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

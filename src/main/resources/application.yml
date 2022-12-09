@@ -10,8 +10,8 @@ spring:
   # mysql数据库连接
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/idata?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
-    url: jdbc:mysql://172.25.90.102:3306/idata?characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/idata?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+#    url: jdbc:mysql://172.25.90.102:3306/idata?characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
     username: "root"
     password: "Jiaicecream1"
   #返回json的全局时间格式
@@ -42,6 +42,11 @@ management:
         enabled: true
 
 
+# 远程
+#MaskRulePath: /home/ysjs3/java/upfile
+# 用来上传用户定义的规则的目录
+MaskRulePath: D:\\uploadFiles\\maskRuleFile
+
 uploadFolder: /home/ysjs3/java/upfile/
 # ??python????
 LocalCodePath : /home/ysjs3/java/code/localVideoMask.py
@@ -53,4 +58,6 @@ InBucketName: idata-video # 文件上传的桶名
 OutBucketName: idata-jia # 转码后保存的桶名
 
 HuaWeiLocation: cn-east-3 # 脱敏服务器标识
+
+
 

@@ -3,6 +3,7 @@ package com.liang.service.impl;
 
 import com.liang.Bean.FileChunkDTO;
 import com.liang.Bean.FileChunkResultDTO;
+import com.liang.Bean.FileUpload;
 import com.liang.service.IUploadService;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
@@ -11,8 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 
@@ -46,6 +51,45 @@ public class UploadServiceImpl implements IUploadService {
 
     @Value("${uploadFolder}")
     private String uploadFolder;
+
+    @Value("${MaskRulePath}")
+    private String MaskRulePath;
+
+
+    @Override
+    public String uploadSmallFile(FileUpload fileUpload) throws IOException {
+
+//        文件名
+        String fileName = fileUpload.getFile().getName();
+        String foldPath = MaskRulePath + File.separator + fileUpload.getUserId();
+        // 创建文件夹
+        Path path = Paths.get(foldPath);
+        Path pathCreate = Files.createDirectories(path);
+        String filePath = pathCreate + File.separator + fileName + ".txt";
+        File file = new File( filePath);
+        FileOutputStream fileOutputStream = null;
+
+        try {
+            fileOutputStream = new FileOutputStream(file);
+            org.apache.commons.io.IOUtils.copy(fileUpload.getFile().getInputStream(),fileOutputStream);
+            System.out.println("===========file upload success=======");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+//                关闭
+                fileOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                logger.error("文件关闭错误",e);
+                return "";
+            }
+        }
+        return filePath;
+    }
+
 
 
     @Override
@@ -141,6 +185,7 @@ public class UploadServiceImpl implements IUploadService {
     public boolean mergeChunk(String identifier, String fileName, Integer totalChunks) throws IOException {
         return mergeChunks(identifier, fileName, totalChunks);
     }
+
 
     /**
      * 合并分片
