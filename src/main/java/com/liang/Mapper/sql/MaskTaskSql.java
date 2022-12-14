@@ -1,6 +1,6 @@
-package com.liang.Dao.sql;
+package com.liang.Mapper.sql;
 
-import com.liang.Bean.MaskTask;
+import com.liang.Rep.MaskTask;
 import org.apache.ibatis.jdbc.SQL;
 
 public class MaskTaskSql {
@@ -8,7 +8,7 @@ public class MaskTaskSql {
     public String updateMaskTask(MaskTask maskTask){
         return new SQL(){
             {
-                UPDATE("maskTask");
+                UPDATE("masktask");
                 if(maskTask.getRuleId() != null){
                     SET("rule_id = #{ruleId}");
                 }

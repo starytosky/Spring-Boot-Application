@@ -20,7 +20,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 // scanBasePackages 表示配置扫描文件的范围，在该目录下的文件会被自动扫描
 @SpringBootApplication(scanBasePackages = "com.liang")
 @EnableAsync
-//@MapperScan("com.liang.Mapper")
+@MapperScan("com.liang.Mapper")
 public class MainApplication {
     public static void main(String[] args) {
 //        配置应用上下文

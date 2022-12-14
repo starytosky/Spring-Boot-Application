@@ -1,8 +1,8 @@
-package com.liang.Dao;
+package com.liang.Mapper;
 
-import com.liang.Bean.CheckTask;
-import com.liang.Bean.LiveVideoMask;
-import com.liang.Dao.sql.liveVideoMaskSql;
+import com.liang.Rep.CheckTask;
+import com.liang.Rep.LiveVideoMask;
+import com.liang.Mapper.sql.liveVideoMaskSql;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -20,8 +20,11 @@ public interface LiveVideoMaskDao {
     @Update("update livevideomask set task_status=#{taskStatus},end_time=#{endTime} where task_id = #{taskId}")
     int updateLiveVieoMaskById(LiveVideoMask liveVideoMask);
 
-    @Select("select count(*) from livevideomask where user_id = #{userId}")
+    @Select("select count(*) from livevideomask where user_id = #{userId} and task_id = #{taskId}")
     int GetUserTaskCountByUserId(LiveVideoMask liveVideoMask);
+
+    @Select("select count(*) from livevideomask where task_id = #{taskId}")
+    int GetUserTaskCountByTaskId(Integer taskId);
 
 
 //    @Select("select * from livevideomask where user_id = #{userId} and task_status = #{status} LIMIT #{totalRecord},#{recordNumber}")

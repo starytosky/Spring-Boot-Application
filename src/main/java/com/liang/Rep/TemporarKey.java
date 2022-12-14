@@ -1,4 +1,4 @@
-package com.liang.Bean;
+package com.liang.Rep;
 
 import lombok.Data;
 

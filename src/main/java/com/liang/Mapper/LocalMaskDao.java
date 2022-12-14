@@ -1,10 +1,9 @@
-package com.liang.Dao;
+package com.liang.Mapper;
 
 
-import com.liang.Bean.CheckTask;
-import com.liang.Bean.LocalMask;
-import com.liang.Dao.sql.LocalMaskSql;
-import com.liang.Dao.sql.liveVideoMaskSql;
+import com.liang.Rep.CheckTask;
+import com.liang.Rep.LocalMask;
+import com.liang.Mapper.sql.LocalMaskSql;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -15,8 +14,8 @@ import java.util.List;
 public interface LocalMaskDao {
 
     //添加
-    @Insert("insert into localmask(user_id,video_path,mask_path,model,start_time,end_time,use_method,task_status,isdelete) values(#{userId},#{videoPath},#{maskPath},#{model},#{startTime},#{endTime},#{useMethod},#{taskStatus},#{isdelete})")
-    @Options(useGeneratedKeys=true, keyProperty="taskId")
+    @Insert("insert into localmask(user_id,task_id,rule_id,task_name,data_name,origin_path,mask_path,model,start_time,end_time,method,task_status,is_type,isdelete) values(#{userId},#{taskId},#{ruleId},#{taskName},#{dataName},#{originPath},#{maskPath},#{model},#{startTime},#{endTime},#{method},#{taskStatus},#{isType},#{isdelete})")
+    @Options(useGeneratedKeys=true, keyProperty="execId")
     int insert(LocalMask localvideoMask);
 
 
@@ -31,5 +30,8 @@ public interface LocalMaskDao {
 
     @Select("select count(*) from localmask where user_id = #{userId} and isdelete=0")
     int getRecordCountByUserId(int user_id);
+
+    @Select("select count(*) from localmask where task_id = #{taskId}")
+    int getRecordCountByTaskId(int taskId);
 
 }

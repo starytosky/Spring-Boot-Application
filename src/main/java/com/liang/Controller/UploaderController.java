@@ -1,14 +1,13 @@
 package com.liang.Controller;
 
-import com.liang.Bean.FileChunkDTO;
-import com.liang.Bean.FileChunkResultDTO;
-import com.liang.Bean.FileUpload;
+import com.liang.Rep.FileChunkDTO;
+import com.liang.Rep.FileChunkResultDTO;
+import com.liang.Rep.FileUpload;
 import com.liang.common.util.Result;
 import com.liang.service.IUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +36,7 @@ public class UploaderController {
     public Result uploadFile(FileUpload fileUpload) throws IOException {
         String filePath = uploadService.uploadSmallFile(fileUpload);
         if (!filePath.equals("")) {
+            // 将上传数据传入数据库
             return Result.ok(filePath);
         }else {
             return Result.build(500,"上传失败");

@@ -1,9 +1,9 @@
 package com.liang.service.impl;
 
 
-import com.liang.Bean.FileChunkDTO;
-import com.liang.Bean.FileChunkResultDTO;
-import com.liang.Bean.FileUpload;
+import com.liang.Rep.FileChunkDTO;
+import com.liang.Rep.FileChunkResultDTO;
+import com.liang.Rep.FileUpload;
 import com.liang.service.IUploadService;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.file.Files;

@@ -1,7 +1,6 @@
-package com.liang.Dao.sql;
+package com.liang.Mapper.sql;
 
-import com.liang.Bean.CheckRule;
-import com.liang.Bean.CheckTask;
+import com.liang.Rep.CheckRule;
 import org.apache.ibatis.jdbc.SQL;
 
 public class MaskRuleSql {
@@ -10,10 +9,10 @@ public class MaskRuleSql {
         return new SQL(){
             {
                 SELECT("*");
-                FROM("maskRule","user");
+                FROM("maskrule","user");
                 if(checkRule.getUserId() != null){
-                    WHERE("maskRule.user_id = user.user_id");
-                    WHERE("maskRule.user_id = #{userId}");
+                    WHERE("maskrule.user_id = user.user_id");
+                    WHERE("maskrule.user_id = #{userId}");
                     WHERE("isdelete = 0");
                 }
                 if(checkRule.getRuleName() != null && checkRule.getRuleName().length()>0){
@@ -29,4 +28,5 @@ public class MaskRuleSql {
             }
         }.toString();
     }
+
 }

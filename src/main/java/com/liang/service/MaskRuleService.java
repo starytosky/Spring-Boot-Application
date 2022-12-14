@@ -1,8 +1,8 @@
 package com.liang.service;
 
 
-import com.liang.Bean.CheckRule;
-import com.liang.Bean.Maskrule;
+import com.liang.Rep.CheckRule;
+import com.liang.Rep.Maskrule;
 
 import java.util.List;
 
@@ -16,4 +16,10 @@ public interface MaskRuleService {
     int deleteMaskRule(Integer userId,Integer ruleId);
 
     int getRecordCountByUserId(Integer userId);
+
+    Maskrule getMaskRuleById(Integer ruleId);
+
+    String getRuleContent(String rulePath);
+
+    Maskrule getMaskRuleDetailByRuleId(Integer ruleId);
 }

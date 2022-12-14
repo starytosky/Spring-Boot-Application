@@ -1,7 +1,7 @@
 package com.liang.service;
 
-import com.liang.Bean.LiveVideoMask;
-import com.liang.Bean.LocalMask;
+import com.liang.Rep.LiveVideoMask;
+import com.liang.Rep.LocalMask;
 
 /**
  * @author liang

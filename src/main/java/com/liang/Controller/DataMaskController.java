@@ -1,9 +1,9 @@
 package com.liang.Controller;
 
-import com.liang.Bean.CheckTask;
-import com.liang.Bean.LiveVideoMask;
-import com.liang.Bean.LocalMask;
-import com.liang.Bean.MaskTask;
+import com.baomidou.mybatisplus.extension.api.R;
+import com.liang.Rep.*;
+import com.liang.Mapper.MaskTaskMapper;
+import com.liang.Mapper.UserMapper;
 import com.liang.common.util.Result;
 import com.liang.service.DataMaskService;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author by liang
@@ -30,10 +32,18 @@ public class DataMaskController {
     private DataMaskService dataMaskService;
 
 
+    @Autowired
+    private UserMapper userMapper;
+
+
+
+
     @PostMapping("createMaskTask")
     public Result createMaskTask(@RequestBody MaskTask maskTask) {
-        if(dataMaskService.createMaskTask(maskTask) != 0) {
-            return Result.ok("创建成功");
+        Date timer = new Date();
+        maskTask.setTime(timer);
+        if( dataMaskService.createMaskTask(maskTask)!= 0) {
+            return Result.ok(maskTask.getTaskId());
         }else {
             return Result.build(500,"创建失败");
         }
@@ -41,6 +51,8 @@ public class DataMaskController {
 
     @PostMapping("updateMaskTask")
     public Result updateMaskTask(@RequestBody MaskTask maskTask) {
+        Date timer = new Date();
+        maskTask.setTime(timer);
         if(dataMaskService.updateMaskTask(maskTask) != 0) {
             return Result.ok("更新成功");
         }else {
@@ -49,36 +61,52 @@ public class DataMaskController {
     }
 
 
+
+
     @PostMapping("localvideomask")
-    public Result localVideo(@RequestBody LocalMask videoMask) {
-        // 检查参数是否正确
-        boolean checkParameters = dataMaskService.checkParameters(videoMask.getModelList(), videoMask.getUseMethod());
-        if(checkParameters) {
-            // 判断文件是否存在
-            Boolean isFile = dataMaskService.isFile(videoMask.getOriginPath());
-            if(!isFile) {
-                return Result.build(500,"离线文件不存在");
-            }else {
-                if(dataMaskService.localVideoMask(videoMask)) {
-                    return Result.ok("正在脱敏..");
-                }else {
-                    return Result.build(500,"数据脱敏失败");
+    public Result localVideo(@RequestBody MaskTask maskTask) throws IOException {
+        Date timer = new Date();
+        maskTask.setTime(timer);
+        if (dataMaskService.updateMaskTask(maskTask) != 0) {
+            // 根据 规则id去拿规则数据，判断是字符串数据还是文件数据,并进行相应的数据处理
+            // 规则描述就是规则本身
+            String ruleDesc = dataMaskService.getMaskRuleByRuleId(maskTask.getRuleId());
+            if (ruleDesc.equals("")) {
+                log.info("任务" + maskTask.getTaskId() + "脱敏规则不正确");
+                return Result.build(500, "脱敏规则不正确");
+            } else {
+                // 检测原始文件是否存在
+                Boolean isFile = dataMaskService.isFile(maskTask.getDataPath());
+                if (!isFile) {
+                    return Result.build(500, "离线文件不存在");
+                } else {
+                    if (dataMaskService.localVideoMask(maskTask,ruleDesc)) {
+                        return Result.ok("正在脱敏..");
+                    } else {
+                        return Result.build(500, "数据脱敏失败");
+                    }
                 }
+
             }
-        }else {
-            return Result.build(500,"参数不正确");
-        }
+        } else return Result.build(500, "保存失败");
     }
 
+
     @PostMapping("livevideomask")
-    public Result liveVideo(@RequestBody LiveVideoMask liveVideoMask) throws IOException {
-        if(dataMaskService.isRtmpStream(liveVideoMask.getStreamUrl())) {
-            boolean isLive = dataMaskService.liveVideoMask(liveVideoMask);
-            if (isLive) {
-                return Result.ok("正在脱敏..");
-            }else return Result.build(500,"脱敏失败");
-        }else {
-            return Result.build(500,"不正确的stream_url");
+    public Result liveVideo(@RequestBody MaskTask maskTask) throws IOException {
+        String ruleDesc = dataMaskService.getMaskRuleByRuleId(maskTask.getRuleId());
+        if (ruleDesc.equals("")) {
+            log.info("任务" + maskTask.getTaskId() + "脱敏规则不正确");
+            return Result.build(500, "脱敏规则不正确");
+        } else {
+            if (dataMaskService.isRtmpStream(maskTask.getStreamUrl())) {
+                boolean isLive = dataMaskService.liveVideoMask(maskTask,ruleDesc);
+                if (isLive) {
+                    return Result.ok("正在脱敏..");
+                } else return Result.build(500, "脱敏失败");
+            } else {
+                return Result.build(500, "不正确的stream_url");
+            }
         }
     }
 
@@ -92,6 +120,13 @@ public class DataMaskController {
         }
     }
 
+    @GetMapping("getTask")
+    public Result getTask(@RequestParam  Integer taskId) {
+        return Result.ok(dataMaskService.getMaskTaskById(taskId));
+    }
+
+
+
     @GetMapping("deleteTask")
     public Result deleteTask(@RequestParam Integer userId,@RequestParam  Integer taskId,@RequestParam Integer typeId) {
         if(dataMaskService.deleteTask(userId,taskId,typeId) == 1) {
@@ -99,13 +134,29 @@ public class DataMaskController {
         }else return Result.build(500,"删除失败");
     }
 
-//    @GetMapping("help")
-//    public Result help() {
-//        System.out.println(("----- selectAll method test ------"));
-//        List<User> userList = userMapper.selectList(null);
-//        Assert.assertEquals(5, userList.size());
-//        userList.forEach(System.out::println);
-//        return Result.ok("正确");
-//    }
+    @GetMapping("getuser")
+    public Result help() {
+        System.out.println(("----- selectAll method test ------"));
+        List<User> userList = userMapper.selectList(null);
+        return Result.ok(userList);
+    }
+
+    @GetMapping("insertUser")
+    public Result insertUser(User user) {
+        if(userMapper.insert(user) == 1) {
+            return Result.ok("插入成功");
+        }else return Result.build(500,"插入失败");
+    }
+
+    @PostMapping("updateUser")
+    public Result updateUser(@RequestBody User user) {
+        log.info(String.valueOf(user));
+        int x = userMapper.updateById(user);
+        if( x== 1) {
+            return Result.ok("更新成功");
+        }else return Result.build(500,"更新失败");
+    }
+
+
 }
 

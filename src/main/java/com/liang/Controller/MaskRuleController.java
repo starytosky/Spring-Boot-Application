@@ -1,8 +1,7 @@
 package com.liang.Controller;
 
-import com.liang.Bean.CheckRule;
-import com.liang.Bean.LiveVideoMask;
-import com.liang.Bean.Maskrule;
+import com.liang.Rep.CheckRule;
+import com.liang.Rep.Maskrule;
 import com.liang.common.util.Result;
 import com.liang.common.util.ResultCodeEnum;
 import com.liang.service.MaskRuleService;
@@ -39,6 +38,11 @@ public class MaskRuleController {
         return Result.build(maskRuleService.getMaskRule(checkRule),recordCount, ResultCodeEnum.SUCCESS);
     }
 
+    @GetMapping("getMaskRuleDetail")
+    public Result getMaskRuleDetailByRuleId(@RequestParam Integer ruleId) {
+        return Result.ok(maskRuleService.getMaskRuleDetailByRuleId(ruleId));
+    }
+
     @GetMapping("deleteRule")
     public Result deleteTask(@RequestParam Integer userId,@RequestParam  Integer ruleId) {
         if(maskRuleService.deleteMaskRule(userId,ruleId) == 1) {
@@ -50,4 +54,12 @@ public class MaskRuleController {
     public Result getCount(@RequestParam Integer userId) {
         return Result.ok(maskRuleService.getRecordCountByUserId(userId));
     }
+
+    // 读取文件数据
+    @GetMapping("getRuleContent")
+    public Result getRuleContent(@RequestParam String rulePath) {
+        return Result.ok(maskRuleService.getRuleContent(rulePath));
+    }
+
+
 }

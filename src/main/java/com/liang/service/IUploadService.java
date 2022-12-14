@@ -3,10 +3,9 @@ package com.liang.service;
 
 
 
-import com.liang.Bean.FileChunkDTO;
-import com.liang.Bean.FileChunkResultDTO;
-import com.liang.Bean.FileUpload;
-import org.springframework.web.multipart.MultipartFile;
+import com.liang.Rep.FileChunkDTO;
+import com.liang.Rep.FileChunkResultDTO;
+import com.liang.Rep.FileUpload;
 
 import java.io.IOException;
 

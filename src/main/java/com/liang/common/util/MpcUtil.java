@@ -1,22 +1,18 @@
 package com.liang.common.util;
 
 // 用户身份认证
-import com.alibaba.fastjson.JSONObject;
 import com.huaweicloud.sdk.core.auth.BasicCredentials;
 // 请求异常类
 import com.huaweicloud.sdk.core.exception.ClientRequestException;
 import com.huaweicloud.sdk.core.exception.ConnectionException;
 import com.huaweicloud.sdk.core.exception.RequestTimeoutException;
-import com.huaweicloud.sdk.core.exception.ServerResponseException;
 // Http 配置
 import com.huaweicloud.sdk.core.http.HttpConfig;
 // 导入mpc的客户端
-import com.huaweicloud.sdk.core.utils.JsonUtils;
 import com.huaweicloud.sdk.mpc.v1.MpcClient;
 // 导入待请求接口的 request 和 response 类
 import com.huaweicloud.sdk.mpc.v1.model.*;
 // 日志打印
-import com.liang.Bean.TemporarKey;
 import com.obs.services.internal.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Header;
@@ -27,8 +23,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;

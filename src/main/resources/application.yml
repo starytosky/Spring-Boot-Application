@@ -43,12 +43,14 @@ management:
 
 
 # 远程
-#MaskRulePath: /home/ysjs3/java/upfile
+#MaskRulePath: /home/ysjs3/java/upfile/maskRuleFile
 # 用来上传用户定义的规则的目录
 MaskRulePath: D:\\uploadFiles\\maskRuleFile
 
-uploadFolder: /home/ysjs3/java/upfile/
+#uploadFolder: /home/ysjs3/java/upfile/
+uploadFolder: D:\\uploadFiles\\
 # ??python????
+
 LocalCodePath : /home/ysjs3/java/code/localVideoMask.py
 
 LiveCodePath: /home/ysjs3/java/code/liveVideoMask.py

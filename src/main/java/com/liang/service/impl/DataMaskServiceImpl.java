@@ -1,15 +1,12 @@
 package com.liang.service.impl;
 
-import com.liang.Bean.CheckTask;
-import com.liang.Bean.LiveVideoMask;
-import com.liang.Bean.LocalMask;
-import com.liang.Bean.MaskTask;
-import com.liang.Dao.LiveVideoMaskDao;
-import com.liang.Dao.LocalMaskDao;
-import com.liang.Dao.MaskTaskDao;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.liang.Mapper.*;
+import com.liang.Rep.*;
 import com.liang.common.util.ObsUtil;
 import com.liang.service.DataMaskService;
 import com.liang.service.IExecService;
+import com.liang.service.MaskRuleService;
 import lombok.extern.slf4j.Slf4j;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
@@ -19,7 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,13 +43,28 @@ public class DataMaskServiceImpl implements DataMaskService {
     private IExecService execService;
 
     @Autowired
+    private MaskRuleService maskRuleService;
+
+    @Autowired
     private LocalMaskDao localMaskDao;
+
+    @Autowired
+    private LocalMaskMapper localMaskMapper;
 
     @Autowired
     private LiveVideoMaskDao liveVideoMaskDao;
 
     @Autowired
+    private LiveVideoMaskMapper liveVideoMaskMapper;
+
+    @Autowired
     private MaskTaskDao maskTaskDao;
+
+    @Autowired
+    private MaskTaskMapper maskTaskMapper;
+
+    @Autowired
+    private MaskRuleMapper maskRuleMapper;
 
     @Value("${uploadFolder}")
     private String uploadFolder;
@@ -72,23 +86,6 @@ public class DataMaskServiceImpl implements DataMaskService {
 
     @Override
     public Boolean isFile(String videoPath) {
-        // 去redis中找该md5Id是否存在 && 访问文件是否存在
-//        boolean isfile = redisTemplate.hasKey(md5Id);
-//        String fileDirPath = uploadFolder + md5Id;
-//        log.info("源文件存放目录",fileDirPath);
-//        File file = new File(fileDirPath);
-//        File[] array = file.listFiles();
-//        if(file.isDirectory() && array.length == 1) {
-//            // 获取这个文件名字
-//            if(array[0].isFile()) {
-//                log.info("源视频文件名称" + array[0].getName());
-//                return fileDirPath + File.separator + array[0].getName();
-//            }else {
-//                return "";
-//            }
-//        }else {
-//            return "";
-//        }
         File file = new File(videoPath);
         if(file.exists() && file.length() != 0) {
             return true;
@@ -120,43 +117,63 @@ public class DataMaskServiceImpl implements DataMaskService {
 
 
     @Override
-    public boolean localVideoMask(LocalMask localvideoMask) {
+    public boolean localVideoMask(MaskTask maskTask,String ruleDesc) throws IOException {
+        // ruleDesc 用于之后构建python命令
+        LocalMask localvideoMask = setLocalMask(maskTask);
+        localMaskMapper.insert(localvideoMask);
+        log.info("数据库返回信息" + localvideoMask.getExecId());
+        // 创建文件脱敏后存放地址
+        String localMaskFilePath = uploadFolder + File.separator + maskTask.getUserId() + File.separator + "Local" + File.separator + maskTask.getTaskId() + File.separator + localvideoMask.getExecId();
+        // 获取文件名
+        File originPath = new File(maskTask.getDataPath().trim());
+//        String[] x = maskTask.getDataPath().split(".");
+//        log.info(x[x.length-1]);
+        log.info(originPath.getName());
+        // 创建文件夹
+        Path path = Paths.get(localMaskFilePath);
+        Path pathCreate = Files.createDirectories(path);
+        localvideoMask.setMaskPath(pathCreate + File.separator + originPath.getName());
+        log.info("脱敏文件存放地址" + pathCreate);
         log.info("原视频存放地址" + localvideoMask.getOriginPath());
-        log.info("视频保存地址" + localvideoMask.getMaskPath());
         log.info("代码地址" + LocalCodePath );
         // String usecmd = "python /home/ysjs3/java/code/test.py -i /home/ysjs3/java/upfile/0198c25790ad81c091d8d0e5c850a0ed/person3.mp4 -o /home/ysjs3/java/output/person3.mp4 --model_list person --device cpu";
         String[] std = new String[] {"python",LocalCodePath,"-i",localvideoMask.getOriginPath(),"-o",localvideoMask.getMaskPath(),"--model_list"};
         // 计算出命令行需要的参数量
-        int cmd_len = localvideoMask.getModelList().length + std.length + 2;
-        String model = "";
-        String[] cmdStr = new String[cmd_len];
-        for (int i = 0; i < std.length; i++) {
-            cmdStr[i] = std[i];
-        }
-        for (int i = std.length; i < (std.length + localvideoMask.getModelList().length); i++) {
-            cmdStr[i] = localvideoMask.getModelList()[i - std.length];
-            model = model + localvideoMask.getModelList()[i - std.length] + ",";
-        }
-        cmdStr[cmd_len -2] = "--device";
-        cmdStr[cmd_len -1] = localvideoMask.getUseMethod();
-        localvideoMask.setModel(model);
+        String[] modelList = localvideoMask.getModel().split(",");
+        int cmd_len = modelList.length + std.length + 2;
+        String[] cmdStr = setCmd(std,modelList,cmd_len,localvideoMask.getMethod());
+        // 更新数据
+        localMaskMapper.updateById(localvideoMask);
+        // 更新任务状态
+        maskTaskDao.updateTaskStatus(localvideoMask.getTaskId(), 0);
+        // 执行异步操作
+        execService.localVideoMask(cmdStr,localvideoMask);
+        return true;
+    }
+
+    public LocalMask setLocalMask(MaskTask maskTask) {
+        LocalMask localvideoMask = new LocalMask();
+        // 根据userid local taskid execid 生成对应文件夹
+        localvideoMask.setModel( maskRuleService.getMaskRuleById(maskTask.getRuleId()).getLimitContent());
+        localvideoMask.setTaskId(maskTask.getTaskId());
+        localvideoMask.setUserId(maskTask.getUserId());
+        localvideoMask.setRuleId(maskTask.getRuleId());
+        localvideoMask.setTaskName(maskTask.getTaskName());
+        localvideoMask.setOriginPath(maskTask.getDataPath());
+        localvideoMask.setIsType(0);
+        localvideoMask.setMethod(maskTask.getMethod());
         Date timer = new Date();
         log.info("任务执行开启时间" + timer);
         localvideoMask.setStartTime(timer);
         localvideoMask.setTaskStatus(0);
         // 0: 存在，1：删除
         localvideoMask.setIsdelete(0);
-        // 向数据库新增数据
-        int x = localMaskDao.insert(localvideoMask);
-        log.info("数据库返回信息" + localvideoMask.getTaskId());
-        // 执行异步操作
-        execService.localVideoMask(cmdStr,localvideoMask);
-        return true;
+        return localvideoMask;
     }
 
 
     @Override
-    public boolean liveVideoMask(LiveVideoMask liveVideoMask) throws IOException {
+    public boolean liveVideoMask(MaskTask maskTask,String ruleDesc) throws IOException {
         /*
             异步操作，同一个类中调用异步方法不生效
             1.启动python脚本
@@ -165,10 +182,11 @@ public class DataMaskServiceImpl implements DataMaskService {
             4.上传完成后调用转码接口执行转码任务，执行转码，定时器获取转码任务状态，最后将转码情况写入数据库。
             5.提供一个前端查询转码情况的接口，对接数据库
          */
-        // 在当前的数量上+1，代表新任务的文件夹
+        LiveVideoMask liveVideoMask = setLiveMask(maskTask);
+        // 获取taskid下的执行记录数 在此条件下+1 新建目录
         Integer user_task_count = liveVideoMaskDao.GetUserTaskCountByUserId(liveVideoMask) + 1;
 
-        String obsPath = liveVideoMask.getUserId() + "/" + user_task_count + "/";
+        String obsPath = liveVideoMask.getUserId() + "/" + liveVideoMask.getTaskId() + "/" + user_task_count + "/";
         String live_user_task_path = uploadFolder + obsPath;
         // 创建文件夹
         Path path = Paths.get(live_user_task_path);
@@ -176,34 +194,54 @@ public class DataMaskServiceImpl implements DataMaskService {
         log.info("文件夹");
         liveVideoMask.setOutFilePath(live_user_task_path);
         String[] std = new String[] {"python",LiveCodePath,"-i",liveVideoMask.getStreamUrl(),"-o", liveVideoMask.getOutFilePath(),"--time",String.valueOf(liveVideoMask.getTimes_sec()),"--filename", liveVideoMask.getOutFilename(),"--model_list"};
+        String[] modelList = liveVideoMask.getModel().split(",");
         // 计算出命令行需要的参数量
-        int cmd_len = liveVideoMask.getModelList().length + std.length + 2;
-        String model = "";
-        String[] cmdStr = new String[cmd_len];
-        for (int i = 0; i < std.length; i++) {
-            cmdStr[i] = std[i];
-        }
-        for (int i = std.length; i < (std.length + liveVideoMask.getModelList().length); i++) {
-            cmdStr[i] = liveVideoMask.getModelList()[i - std.length];
-            model = model + liveVideoMask.getModelList()[i - std.length] + ",";
-        }
-        cmdStr[cmd_len -2] = "--device";
-        cmdStr[cmd_len -1] = liveVideoMask.getUseMethod();
-
+        int cmd_len = modelList.length + std.length + 2;
+        String[] cmdStr = setCmd(std,modelList,cmd_len,liveVideoMask.getMethod());
         // 向obs创建文件夹
         ObsUtil.CreateFolder(InBucketName,obsPath);
         // 向数据库插入数据
         liveVideoMask.setObsPath(obsPath);
-        liveVideoMask.setModel(model);
-        Date timer = new Date();
-        liveVideoMask.setStartTime(timer);
-        liveVideoMask.setTaskStatus(0);
-        liveVideoMask.setIsdelete(0);
-        liveVideoMaskDao.insert(liveVideoMask);
-        log.info("数据库返回信息" + liveVideoMask.getTaskId());
+        liveVideoMaskMapper.insert(liveVideoMask);
+        log.info("数据库返回信息" + liveVideoMask.getExecId());
         // 执行异步操作
         execService.liveVideoMask(cmdStr,liveVideoMask);
         return true;
+    }
+    // 构建命令语句
+    public String[] setCmd(String[] std,String[] ModelList,Integer cmdLen,String method) {
+        String[] cmdStr = new String[cmdLen];
+        for (int i = 0; i < std.length; i++) {
+            cmdStr[i] = std[i];
+        }
+        for (int i = std.length; i < (std.length + ModelList.length); i++) {
+            cmdStr[i] = ModelList[i - std.length];
+        }
+        cmdStr[cmdLen -2] = "--device";
+        cmdStr[cmdLen -1] = method;
+        return cmdStr;
+    }
+
+    @Override
+    public LiveVideoMask setLiveMask(MaskTask maskTask) {
+        LiveVideoMask liveVideoMask = null;
+        // 根据userid local taskid execid 生成对应文件夹
+        liveVideoMask.setModel( maskRuleService.getMaskRuleById(maskTask.getRuleId()).getLimitContent());
+        liveVideoMask.setTaskId(maskTask.getTaskId());
+        liveVideoMask.setUserId(maskTask.getUserId());
+        liveVideoMask.setRuleId(maskTask.getRuleId());
+        liveVideoMask.setTaskName(maskTask.getTaskName());
+        liveVideoMask.setOutFilename(maskTask.getStreamMaskName());
+        liveVideoMask.setStreamUrl(maskTask.getStreamUrl());
+        liveVideoMask.setTaskStatus(0);
+        liveVideoMask.setMethod(maskTask.getMethod());
+        Date timer = new Date();
+        log.info("任务执行开启时间" + timer);
+        liveVideoMask.setStartTime(timer);
+        liveVideoMask.setIsType(1);
+        // 0: 存在，1：删除
+        liveVideoMask.setIsdelete(0);
+        return liveVideoMask;
     }
 
     @Override
@@ -248,13 +286,38 @@ public class DataMaskServiceImpl implements DataMaskService {
 
     @Override
     public int createMaskTask(MaskTask maskTask) {
-        return maskTaskDao.createMaskTask(maskTask);
+        return maskTaskMapper.insert(maskTask);
     }
 
 
     @Override
     public int updateMaskTask(MaskTask maskTask) {
-        return maskTaskDao.updateMaskTask(maskTask) ;
+        return maskTaskMapper.updateById(maskTask) ;
+    }
+
+    @Override
+    public String getMaskRuleByRuleId(Integer ruleId) {
+        Maskrule maskrule = maskRuleService.getMaskRuleById(ruleId);
+        // 判断是字符串还是文件
+        if(maskrule == null) {
+            return "";
+        }else {
+            if(maskrule.getIsupload()==0) { //规则为定义的字符串
+                return maskrule.getRuleDesc();
+            }else { //规则在上传的文件里
+                return maskRuleService.getRuleContent(maskrule.getRulePath());
+            }
+        }
+    }
+
+    @Override
+    public MaskTask getMaskTaskById(Integer taskId) {
+        return maskTaskMapper.selectById(taskId);
+    }
+
+    @Override
+    public String getMaskMethodByMethodId(Integer metnodId) {
+        return null;
     }
 
 
