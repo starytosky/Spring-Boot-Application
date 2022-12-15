@@ -1,6 +1,5 @@
 package com.liang.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.liang.Mapper.*;
 import com.liang.Rep.*;
 import com.liang.common.util.ObsUtil;
@@ -16,9 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -126,8 +123,6 @@ public class DataMaskServiceImpl implements DataMaskService {
         String localMaskFilePath = uploadFolder + File.separator + maskTask.getUserId() + File.separator + "Local" + File.separator + maskTask.getTaskId() + File.separator + localvideoMask.getExecId();
         // 获取文件名
         File originPath = new File(maskTask.getDataPath().trim());
-//        String[] x = maskTask.getDataPath().split(".");
-//        log.info(x[x.length-1]);
         log.info(originPath.getName());
         // 创建文件夹
         Path path = Paths.get(localMaskFilePath);

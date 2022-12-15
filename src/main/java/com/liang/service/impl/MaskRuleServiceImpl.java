@@ -1,9 +1,7 @@
 package com.liang.service.impl;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.liang.Mapper.MaskRuleMapper;
-import com.liang.Mapper.MaskTaskMapper;
 import com.liang.Rep.CheckRule;
 import com.liang.Rep.Maskrule;
 import com.liang.Mapper.MaskRuleDao;
@@ -13,9 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.List;
 
 @Service
