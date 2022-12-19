@@ -65,6 +65,7 @@ public class DataMaskController {
     public Result localVideo(@RequestBody MaskTask maskTask) throws IOException {
         Date timer = new Date();
         maskTask.setTime(timer);
+        // 查看
         if (dataMaskService.updateMaskTask(maskTask) != 0) {
             // 根据 规则id去拿规则数据，判断是字符串数据还是文件数据,并进行相应的数据处理
             // 规则描述就是规则本身
@@ -84,7 +85,6 @@ public class DataMaskController {
                         return Result.build(500, "数据脱敏失败");
                     }
                 }
-
             }
         } else return Result.build(500, "保存失败");
     }
@@ -103,7 +103,7 @@ public class DataMaskController {
                     return Result.ok("正在脱敏..");
                 } else return Result.build(500, "脱敏失败");
             } else {
-                return Result.build(500, "不正确的stream_url");
+                return Result.build(500, "请输入正确的脱敏地址！");
             }
         }
     }

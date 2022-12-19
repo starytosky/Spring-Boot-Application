@@ -18,6 +18,7 @@ public class LiveVideoMask {
     private String name;
     private String taskName;
     private String streamUrl;
+    private String streamMaskName;
     private String outFilePath;
     private String outFilename;
     private String dataName;
@@ -29,5 +30,4 @@ public class LiveVideoMask {
     private Date endTime;
     private Integer isType;
     private Integer isdelete;
-    private Long times_sec;
 }

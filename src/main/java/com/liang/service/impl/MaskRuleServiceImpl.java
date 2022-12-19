@@ -25,7 +25,6 @@ public class MaskRuleServiceImpl implements MaskRuleService {
     @Autowired
     private MaskRuleMapper maskRuleMapper;
 
-
     @Override
     public int addMaskRule(Maskrule maskrule) {
         return maskRuleMapper.insert(maskrule);

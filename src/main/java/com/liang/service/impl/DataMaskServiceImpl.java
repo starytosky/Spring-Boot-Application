@@ -188,10 +188,11 @@ public class DataMaskServiceImpl implements DataMaskService {
         Path pathCreate = Files.createDirectories(path);
         log.info("文件夹");
         liveVideoMask.setOutFilePath(live_user_task_path);
-        String[] std = new String[] {"python",LiveCodePath,"-i",liveVideoMask.getStreamUrl(),"-o", liveVideoMask.getOutFilePath(),"--time",String.valueOf(liveVideoMask.getTimes_sec()),"--filename", liveVideoMask.getOutFilename(),"--model_list"};
+        String[] std = new String[] {"python",LiveCodePath,"-i",liveVideoMask.getStreamUrl(),"-o", liveVideoMask.getOutFilePath(),"--filename", liveVideoMask.getOutFilename(),"--model_list"};
         String[] modelList = liveVideoMask.getModel().split(",");
         // 计算出命令行需要的参数量
         int cmd_len = modelList.length + std.length + 2;
+        // 生成算法调用指令
         String[] cmdStr = setCmd(std,modelList,cmd_len,liveVideoMask.getMethod());
         // 向obs创建文件夹
         ObsUtil.CreateFolder(InBucketName,obsPath);
@@ -219,7 +220,7 @@ public class DataMaskServiceImpl implements DataMaskService {
 
     @Override
     public LiveVideoMask setLiveMask(MaskTask maskTask) {
-        LiveVideoMask liveVideoMask = null;
+        LiveVideoMask liveVideoMask = new LiveVideoMask();
         // 根据userid local taskid execid 生成对应文件夹
         liveVideoMask.setModel( maskRuleService.getMaskRuleById(maskTask.getRuleId()).getLimitContent());
         liveVideoMask.setTaskId(maskTask.getTaskId());

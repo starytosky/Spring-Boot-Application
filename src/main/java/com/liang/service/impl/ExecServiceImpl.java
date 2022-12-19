@@ -73,7 +73,7 @@ public class ExecServiceImpl implements IExecService {
                 // 设置任务集合状态
                 updateTaskStatus(0,localvideoMask.getTaskId(), localvideoMask.getExecId(),1);
                 // 向脱敏数据表新增一条记录
-                setMaskData(0,null,localvideoMask);
+                localSetMaskData(localvideoMask);
                 log.info("任务"+ localvideoMask.getExecId() +"数据脱敏完成");
             }
         } catch (IOException | InterruptedException e) {
@@ -143,7 +143,7 @@ public class ExecServiceImpl implements IExecService {
                                                 log.info("文件下载完成");
                                                 setLiveTaskStatus(6,liveVideoMask);
                                                 // 向数据库插入信息
-                                                setMaskData(1,liveVideoMask,null);
+                                                liveSetMaskData(liveVideoMask);
                                                 updateTaskStatus(1, liveVideoMask.getTaskId(), liveVideoMask.getExecId(), 1);
                                             }else {
                                                 log.info("文件下载失败");
@@ -182,23 +182,27 @@ public class ExecServiceImpl implements IExecService {
             liveVideoMaskDao.updateLiveVieoMaskById(liveVideoMask);
         }
 
-        public void setMaskData(Integer type,LiveVideoMask liveVideoMask ,LocalMask localvideoMask) {
-            MaskData maskData = null;
-            if(type==1) {
-                maskData.setExecId(liveVideoMask.getExecId());
-                maskData.setTaskId(liveVideoMask.getTaskId());
-                maskData.setUserId(liveVideoMask.getUserId());
-                maskData.setDataType(0);
-                maskData.setMaskPath(liveVideoMask.getOutFilePath() + liveVideoMask.getOutFilename());
-                maskData.setIsType(1);
-            }else {
-                maskData.setExecId(localvideoMask.getExecId());
-                maskData.setTaskId(localvideoMask.getTaskId());
-                maskData.setUserId(localvideoMask.getUserId());
-                maskData.setDataType(0);
-                maskData.setMaskPath(localvideoMask.getMaskPath());
-                maskData.setIsType(0);
-            }
+        public void localSetMaskData(LocalMask localvideoMask) {
+            MaskData maskData = new MaskData();
+            maskData.setExecId(localvideoMask.getExecId());
+            maskData.setTaskId(localvideoMask.getTaskId());
+            maskData.setUserId(localvideoMask.getUserId());
+            maskData.setDataType(0);
+            maskData.setMaskPath(localvideoMask.getMaskPath());
+            maskData.setIsType(0);
+            Date endTime = new Date();
+            maskData.setTime(endTime);
+            maskDataMapper.insert(maskData);
+        }
+
+        public void liveSetMaskData(LiveVideoMask liveVideoMask ) {
+            MaskData maskData = new MaskData();
+            maskData.setExecId(liveVideoMask.getExecId());
+            maskData.setTaskId(liveVideoMask.getTaskId());
+            maskData.setUserId(liveVideoMask.getUserId());
+            maskData.setDataType(0);
+            maskData.setMaskPath(liveVideoMask.getOutFilePath() + liveVideoMask.getOutFilename());
+            maskData.setIsType(1);
             Date endTime = new Date();
             maskData.setTime(endTime);
             maskDataMapper.insert(maskData);
