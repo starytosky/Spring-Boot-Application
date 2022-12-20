@@ -33,25 +33,29 @@ public class MaskRuleController {
 
     @GetMapping("checkRule")
     public Result checkTask(CheckRule checkRule) {
-        checkRule.setTotalRecord(checkRule.getRecordNumber()*checkRule.getPageNumber());
-        int recordCount = maskRuleService.getRecordCountByUserId(checkRule.getUserId());
+        checkRule.setTotalRecord(checkRule.getRecordNumber()*(checkRule.getPageNumber() - 1));
+        int recordCount = maskRuleService.selectRuleCount(checkRule);
         return Result.build(maskRuleService.getMaskRule(checkRule),recordCount, ResultCodeEnum.SUCCESS);
     }
 
     @GetMapping("getMaskRuleDetail")
     public Result getMaskRuleDetailByRuleId(@RequestParam Integer ruleId) {
-        return Result.ok(maskRuleService.getMaskRuleDetailByRuleId(ruleId));
+        Maskrule maskrule = maskRuleService.getMaskRuleDetailByRuleId(ruleId);
+        if(maskrule != null) {
+            return Result.ok(maskrule);
+        }else return Result.build(500,"请输入正确的ruleId");
+
     }
 
     @GetMapping("deleteRule")
-    public Result deleteTask(@RequestParam Integer userId,@RequestParam  Integer ruleId) {
+    public Result deleteTask(@RequestParam String userId,@RequestParam  Integer ruleId) {
         if(maskRuleService.deleteMaskRule(userId,ruleId) == 1) {
             return Result.ok("删除成功");
         }else return Result.build(500,"删除失败");
     }
 
     @GetMapping("getCount")
-    public Result getCount(@RequestParam Integer userId) {
+    public Result getCount(@RequestParam String userId) {
         return Result.ok(maskRuleService.getRecordCountByUserId(userId));
     }
 

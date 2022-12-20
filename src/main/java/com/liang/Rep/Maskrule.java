@@ -12,9 +12,9 @@ import java.util.Date;
 public class Maskrule {
   @TableId(value = "rule_id",type = IdType.AUTO)
   private Integer ruleId;
-  private Integer userId;
+  private String userId;
   private String ruleName;
-  private String name;
+  private String userName;
   private Integer dataType;
   private Integer isupload; // 是否是上传的
   private String rulePath;  // 上传的自定义规则保存路径

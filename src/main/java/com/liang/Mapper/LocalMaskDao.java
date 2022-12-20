@@ -1,9 +1,11 @@
 package com.liang.Mapper;
 
 
-import com.liang.Rep.CheckTask;
+import com.liang.Rep.CheckLocalData;
+import com.liang.Rep.CheckMaskTask;
 import com.liang.Rep.LocalMask;
 import com.liang.Mapper.sql.LocalMaskSql;
+import com.liang.Res.LocalData;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -23,7 +25,13 @@ public interface LocalMaskDao {
     void updateLocalVieoMaskById(LocalMask localvideoMask);
 
     @SelectProvider(type = LocalMaskSql.class, method = "selectBylocalRecord")
-    List<LocalMask> GetUserTaskByUserId(CheckTask checkTask);
+    List<LocalMask> GetUserTaskByUserId(CheckMaskTask checkMaskTask);
+
+    @SelectProvider(type = LocalMaskSql.class, method = "selectLocalData")
+    List<LocalData> selectLocalData(CheckLocalData checkLocalData);
+
+    @SelectProvider(type = LocalMaskSql.class, method = "LocalDataCount")
+    int LocalDataCount(CheckLocalData checkLocalData);
 
     @Update("update localmask set isdelete = 1 where user_id = #{userId} and task_id = #{taskId}")
     int deleteTask(Integer userId,Integer taskId);

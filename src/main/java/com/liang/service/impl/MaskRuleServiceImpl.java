@@ -36,12 +36,17 @@ public class MaskRuleServiceImpl implements MaskRuleService {
     }
 
     @Override
-    public int deleteMaskRule(Integer userId, Integer ruleId) {
+    public int selectRuleCount(CheckRule checkRule) {
+        return maskRuleDao.selectRuleCount(checkRule);
+    }
+
+    @Override
+    public int deleteMaskRule(String userId, Integer ruleId) {
         return maskRuleDao.deleteRule(userId,ruleId);
     }
 
     @Override
-    public int getRecordCountByUserId(Integer userId) {
+    public int getRecordCountByUserId(String userId) {
         return maskRuleDao.getRecordCountByUserId(userId);
     }
 
@@ -56,8 +61,10 @@ public class MaskRuleServiceImpl implements MaskRuleService {
 
     public Maskrule getMaskRuleDetailByRuleId(Integer ruleId) {
         Maskrule maskrule = maskRuleDao.getRecordByRuleId(ruleId);
-        if(maskrule.getIsupload()==1) {
-            maskrule.setRuleDesc(getRuleContent(maskrule.getRulePath()));
+        if(maskrule != null) {
+            if(maskrule.getIsupload()==1) {
+                maskrule.setRuleDesc(getRuleContent(maskrule.getRulePath()));
+            }
         }
         return maskrule;
     }

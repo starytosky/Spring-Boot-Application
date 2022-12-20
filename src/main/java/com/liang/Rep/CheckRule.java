@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class CheckRule {
-    private Integer userId;
+    private String userId;
     private String ruleName;
     private Integer dataType;
     private Integer pageNumber;

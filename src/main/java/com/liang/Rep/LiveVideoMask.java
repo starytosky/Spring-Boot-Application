@@ -13,9 +13,9 @@ public class LiveVideoMask {
     @TableId(value = "exec_id",type = IdType.AUTO)
     private Integer execId;
     private Integer taskId;
-    private Integer userId;
+    private String userId;
     private Integer ruleId;
-    private String name;
+    private String userName;
     private String taskName;
     private String streamUrl;
     private String streamMaskName;

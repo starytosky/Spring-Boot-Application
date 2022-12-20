@@ -13,9 +13,9 @@ public class LocalMask {
     @TableId(value = "exec_id",type = IdType.AUTO)
     private Integer execId;
     private Integer taskId;
-    private Integer userId;
+    private String userId;
     private Integer ruleId;
-    private String name; // 用户名
+    private String userName; // 用户名
     private String taskName;
     private String dataName;
     private String originPath;

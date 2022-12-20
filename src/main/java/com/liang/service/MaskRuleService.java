@@ -13,9 +13,11 @@ public interface MaskRuleService {
 
     List<Maskrule> getMaskRule(CheckRule checkRule);
 
-    int deleteMaskRule(Integer userId,Integer ruleId);
+    int selectRuleCount(CheckRule checkRule);
 
-    int getRecordCountByUserId(Integer userId);
+    int deleteMaskRule(String userId,Integer ruleId);
+
+    int getRecordCountByUserId(String userId);
 
     Maskrule getMaskRuleById(Integer ruleId);
 

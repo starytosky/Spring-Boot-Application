@@ -13,14 +13,14 @@ import java.util.Date;
 public class MaskTask {
   @TableId(value = "task_id",type = IdType.AUTO)
   private Integer taskId;
-  private Integer userId;
+  private String userId;
   private Integer ruleId;
   private Integer methodId;
   private String taskName;
   private Integer taskStatus;
   private Integer isType;
   private String taskDesc;
-  private Integer dataId;
+  private String dataId;
   private String dataPath;
   private String dataType;
   private String streamMaskName; // 动态脱敏后保存的文件名

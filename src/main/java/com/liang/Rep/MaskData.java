@@ -11,7 +11,7 @@ import lombok.Data;
 public class MaskData {
   @TableId(value = "mask_data_id",type = IdType.AUTO)
   private Integer maskDataId;
-  private Integer userId;
+  private String userId;
   private Integer taskId;
   private Integer execId;
   private String maskPath;

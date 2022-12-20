@@ -3,8 +3,8 @@ package com.liang.Rep;
 import lombok.Data;
 
 @Data
-public class CheckTask {
-    private Integer userId;
+public class CheckMaskTask {
+    private String userId;
     private Integer typeId;
     private String taskName;
     private Integer taskStatus;

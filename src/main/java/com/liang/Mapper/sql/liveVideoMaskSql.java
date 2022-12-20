@@ -1,31 +1,31 @@
 package com.liang.Mapper.sql;
 
-import com.liang.Rep.CheckTask;
+import com.liang.Rep.CheckMaskTask;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.jdbc.SQL;
 
 @Slf4j
 public class liveVideoMaskSql {
 
-    public String selectByliveRecord(CheckTask checkTask){
+    public String selectByliveRecord(CheckMaskTask checkMaskTask){
         return new SQL(){
             {
                 SELECT("*");
-                FROM("livevideomask","user");
-                if(checkTask.getUserId() != null){
+                FROM("livevideomask","userinfo");
+                if(checkMaskTask.getUserId() != null){
                     WHERE("livevideomask.user_id = #{userId}");
-                    WHERE("livevideomask.user_id = user.user_id");
+                    WHERE("livevideomask.user_id = userinfo.user_id");
                     WHERE("isdelete = 0");
                 }
-                if(checkTask.getTaskName() != null && checkTask.getTaskName().length()>0){
+                if(checkMaskTask.getTaskName() != null && checkMaskTask.getTaskName().length()>0){
 
                     WHERE("task_name = #{taskName}");
                 }
-                if(checkTask.getTaskStatus() != null){
+                if(checkMaskTask.getTaskStatus() != null){
                     WHERE("task_status = #{taskStatus}");
                 }
-                if(checkTask.getTotalRecord() != null){
-                    String str = checkTask.getTotalRecord().toString() + ","+checkTask.getRecordNumber().toString();
+                if(checkMaskTask.getTotalRecord() != null){
+                    String str = checkMaskTask.getTotalRecord().toString() + ","+ checkMaskTask.getRecordNumber().toString();
                     LIMIT(str);
                 }
             }

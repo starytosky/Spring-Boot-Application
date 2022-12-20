@@ -21,16 +21,19 @@ public interface MaskRuleDao {
     @SelectProvider(type = MaskRuleSql.class, method = "selectRule")
     List<Maskrule> GetRuleList(CheckRule checkRule);
 
-    @Select("select * from maskrule,user where maskrule.user_id = user.user_id AND maskrule.rule_id = #{ruleId} AND  isdelete=0")
+    @SelectProvider(type = MaskRuleSql.class, method = "selectRuleCount")
+    int selectRuleCount(CheckRule checkRule);
+
+    @Select("select * from maskrule,userinfo where maskrule.user_id = userinfo.user_id AND maskrule.rule_id = #{ruleId} AND  isdelete=0")
     Maskrule getRecordByRuleId(int ruleId);
 
 
 
 //    删除
     @Update("update maskrule set isdelete = 1 where user_id = #{userId} and rule_id = #{ruleId}")
-    int deleteRule(Integer userId,Integer ruleId);
+    int deleteRule(String userId,Integer ruleId);
 
     @Select("select count(*) from maskrule where user_id = #{userId} and isdelete=0")
-    int getRecordCountByUserId(int user_id);
+    int getRecordCountByUserId(String user_id);
 
 }

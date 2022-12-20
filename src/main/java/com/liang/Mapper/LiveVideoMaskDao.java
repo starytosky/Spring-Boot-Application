@@ -1,6 +1,6 @@
 package com.liang.Mapper;
 
-import com.liang.Rep.CheckTask;
+import com.liang.Rep.CheckMaskTask;
 import com.liang.Rep.LiveVideoMask;
 import com.liang.Mapper.sql.liveVideoMaskSql;
 import org.apache.ibatis.annotations.*;
@@ -29,7 +29,7 @@ public interface LiveVideoMaskDao {
 
 //    @Select("select * from livevideomask where user_id = #{userId} and task_status = #{status} LIMIT #{totalRecord},#{recordNumber}")
     @SelectProvider(type = liveVideoMaskSql.class, method = "selectByliveRecord")
-    List<LiveVideoMask> GetUserTaskByUserId(CheckTask checkTask);
+    List<LiveVideoMask> GetUserTaskByUserId(CheckMaskTask checkMaskTask);
 
     @Update("update livevideomask set isdelete = 1 where user_id = #{userId} and task_id = #{taskId}")
     int deleteTask(Integer userId,Integer taskId);

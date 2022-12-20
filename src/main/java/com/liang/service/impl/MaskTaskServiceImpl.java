@@ -2,8 +2,9 @@ package com.liang.service.impl;
 
 import com.liang.Mapper.*;
 import com.liang.Rep.*;
+import com.liang.Res.LocalData;
 import com.liang.common.util.ObsUtil;
-import com.liang.service.DataMaskService;
+import com.liang.service.MaskTaskService;
 import com.liang.service.IExecService;
 import com.liang.service.MaskRuleService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
-public class DataMaskServiceImpl implements DataMaskService {
+public class MaskTaskServiceImpl implements MaskTaskService {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -258,27 +259,7 @@ public class DataMaskServiceImpl implements DataMaskService {
         }
     }
 
-    // 根据userid，和任务类型id获取任务情况
-    @Override
-    public List<LiveVideoMask> getLiveTaskPosition(CheckTask checkTask) {
-        List<LiveVideoMask> liveVideoMaskList =  liveVideoMaskDao.GetUserTaskByUserId(checkTask);
-        return liveVideoMaskList;
-    }
 
-    @Override
-    public List<LocalMask> getLocalTaskPosition(CheckTask checkTask) {
-        List<LocalMask> localvideoMaskList =  localMaskDao.GetUserTaskByUserId(checkTask);
-        return localvideoMaskList;
-    }
-
-    @Override
-    public int deleteTask(Integer userId, Integer taskId, Integer typeId) {
-        if(typeId == 0) {
-            return localMaskDao.deleteTask(userId,taskId);
-        }else {
-            return liveVideoMaskDao.deleteTask(userId,taskId);
-        }
-    }
 
     @Override
     public int createMaskTask(MaskTask maskTask) {
@@ -314,6 +295,16 @@ public class DataMaskServiceImpl implements DataMaskService {
     @Override
     public String getMaskMethodByMethodId(Integer metnodId) {
         return null;
+    }
+
+    @Override
+    public List<LocalData> getLocalDataList(CheckLocalData checkLocalData) {
+        return localMaskDao.selectLocalData(checkLocalData);
+    }
+
+    @Override
+    public int getLocalDataCount(CheckLocalData checkLocalData) {
+        return localMaskDao.LocalDataCount(checkLocalData);
     }
 
 

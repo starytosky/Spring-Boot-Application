@@ -1,14 +1,15 @@
 package com.liang.service;
 
-import com.liang.Rep.CheckTask;
+import com.liang.Rep.CheckLocalData;
 import com.liang.Rep.LiveVideoMask;
 import com.liang.Rep.LocalMask;
 import com.liang.Rep.MaskTask;
+import com.liang.Res.LocalData;
 
 import java.io.IOException;
 import java.util.List;
 
-public interface DataMaskService {
+public interface MaskTaskService {
 
 
     // 判断文件是否存在
@@ -30,12 +31,6 @@ public interface DataMaskService {
 
     boolean isRtmpStream(String rtspUrl);
 
-    // 根据userid，和任务类型id获取任务情况
-    List<LiveVideoMask> getLiveTaskPosition(CheckTask checkTask);
-
-    List<LocalMask> getLocalTaskPosition(CheckTask checkTask);
-
-    int deleteTask(Integer userId,Integer taskId, Integer typeId);
 
     int createMaskTask(MaskTask maskTask);
 
@@ -46,6 +41,10 @@ public interface DataMaskService {
     MaskTask getMaskTaskById(Integer taskId);
 
     String getMaskMethodByMethodId(Integer metnodId);
+
+    List<LocalData> getLocalDataList(CheckLocalData checkLocalData);
+
+    int getLocalDataCount(CheckLocalData checkLocalData);
 //
 //    // readVideoFrame
 //    boolean readVideoFrame();
