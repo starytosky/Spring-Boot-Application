@@ -1,10 +1,9 @@
 package com.liang.service;
 
-import com.liang.Rep.CheckLocalData;
-import com.liang.Rep.LiveVideoMask;
-import com.liang.Rep.LocalMask;
-import com.liang.Rep.MaskTask;
+import com.liang.Rep.*;
+import com.liang.Res.ExecRecordInfo;
 import com.liang.Res.LocalData;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.List;
@@ -45,6 +44,18 @@ public interface MaskTaskService {
     List<LocalData> getLocalDataList(CheckLocalData checkLocalData);
 
     int getLocalDataCount(CheckLocalData checkLocalData);
+
+    // 获取任务列表
+    List<MaskTask> getTaskRecord(CheckMaskTask checkMaskTask);
+    // 分页查询获取记录条数
+    int getTaskRecordCount(CheckMaskTask checkMaskTask);
+
+    // 获取静态执行记录列表
+    List<LocalMask> getLocalExecRecordList(String userId, Integer taskId);
+    // 获取动态执行记录
+    List<LiveVideoMask> getLiveExecRecordList(String userId, Integer taskId);
+
+    ExecRecordInfo getExecRecordInfo(String userId, Integer execId,Integer isType);
 //
 //    // readVideoFrame
 //    boolean readVideoFrame();

@@ -188,6 +188,7 @@ public class ExecServiceImpl implements IExecService {
             maskData.setTaskId(localvideoMask.getTaskId());
             maskData.setUserId(localvideoMask.getUserId());
             maskData.setDataType(0);
+            maskData.setDataName(localvideoMask.getDataName());
             maskData.setMaskPath(localvideoMask.getMaskPath());
             maskData.setIsType(0);
             Date endTime = new Date();
@@ -201,7 +202,8 @@ public class ExecServiceImpl implements IExecService {
             maskData.setTaskId(liveVideoMask.getTaskId());
             maskData.setUserId(liveVideoMask.getUserId());
             maskData.setDataType(0);
-            maskData.setMaskPath(liveVideoMask.getOutFilePath() + liveVideoMask.getOutFilename());
+            maskData.setMaskPath(liveVideoMask.getOutFilePath() + liveVideoMask.getOutFilename() + ".mp4");
+            maskData.setDataName(liveVideoMask.getOutFilename());
             maskData.setIsType(1);
             Date endTime = new Date();
             maskData.setTime(endTime);

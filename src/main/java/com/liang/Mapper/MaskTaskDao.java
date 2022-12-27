@@ -1,10 +1,14 @@
 package com.liang.Mapper;
 
 
+import com.liang.Mapper.sql.LocalMaskSql;
+import com.liang.Rep.CheckMaskTask;
 import com.liang.Rep.MaskTask;
 import com.liang.Mapper.sql.MaskTaskSql;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Mapper
 @Repository
@@ -20,5 +24,13 @@ public interface MaskTaskDao {
 
     @Update("update masktask set task_status=#{status} where task_id = #{taskId}")
     int updateTaskStatus(Integer taskId,Integer status);
+
+    @SelectProvider(type = MaskTaskSql.class, method = "selectByTaskRecord")
+    List<MaskTask> getTaskRecord(CheckMaskTask checkMaskTask);
+
+    @SelectProvider(type = MaskTaskSql.class, method = "selectTaskRecordCount")
+    int getTaskRecordCount(CheckMaskTask checkMaskTask);
+
+
 
 }

@@ -36,4 +36,5 @@ public interface MaskRuleDao {
     @Select("select count(*) from maskrule where user_id = #{userId} and isdelete=0")
     int getRecordCountByUserId(String user_id);
 
+
 }

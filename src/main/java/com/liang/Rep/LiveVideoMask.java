@@ -22,6 +22,7 @@ public class LiveVideoMask {
     private String outFilePath;
     private String outFilename;
     private String dataName;
+    private Integer dataType;
     private String obsPath;
     private Integer taskStatus;
     private String method;

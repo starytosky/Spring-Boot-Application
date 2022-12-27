@@ -2,6 +2,7 @@ package com.liang.service.impl;
 
 import com.liang.Mapper.*;
 import com.liang.Rep.*;
+import com.liang.Res.ExecRecordInfo;
 import com.liang.Res.LocalData;
 import com.liang.common.util.ObsUtil;
 import com.liang.service.MaskTaskService;
@@ -156,6 +157,7 @@ public class MaskTaskServiceImpl implements MaskTaskService {
         localvideoMask.setRuleId(maskTask.getRuleId());
         localvideoMask.setTaskName(maskTask.getTaskName());
         localvideoMask.setOriginPath(maskTask.getDataPath());
+        localvideoMask.setDataName(localMaskDao.getResourceNameByResourceId(maskTask.getDataId()));
         localvideoMask.setIsType(0);
         localvideoMask.setMethod(maskTask.getMethod());
         Date timer = new Date();
@@ -305,6 +307,40 @@ public class MaskTaskServiceImpl implements MaskTaskService {
     @Override
     public int getLocalDataCount(CheckLocalData checkLocalData) {
         return localMaskDao.LocalDataCount(checkLocalData);
+    }
+
+    @Override
+    public List<MaskTask> getTaskRecord(CheckMaskTask checkMaskTask) {
+        return maskTaskDao.getTaskRecord(checkMaskTask);
+    }
+
+    @Override
+    public int getTaskRecordCount(CheckMaskTask checkMaskTask) {
+        return maskTaskDao.getTaskRecordCount(checkMaskTask);
+    }
+
+    @Override
+    public List<LocalMask> getLocalExecRecordList(String userId, Integer taskId) {
+        return localMaskDao.getExecRecordList(userId,taskId);
+    }
+
+    @Override
+    public List<LiveVideoMask> getLiveExecRecordList(String userId, Integer taskId) {
+        return liveVideoMaskDao.getExecRecordList(userId,taskId);
+    }
+
+    @Override
+    public ExecRecordInfo getExecRecordInfo(String userId, Integer execId, Integer isType) {
+        ExecRecordInfo execRecordInfo;
+        if(isType==0) {
+            execRecordInfo = localMaskDao.getExecRecordInfo(execId);
+        }else {
+            execRecordInfo = liveVideoMaskDao.getExecRecordInfo(execId);
+        }
+        if(execRecordInfo.getIsupload() == 1) {
+            execRecordInfo.setRuleDesc(maskRuleService.getRuleContent(execRecordInfo.getRulePath()));
+        }
+        return execRecordInfo;
     }
 
 

@@ -54,6 +54,13 @@ public class MaskTaskController {
         }
     }
 
+    @GetMapping("getMaskTaskList")
+    public Result getTaskRecord(CheckMaskTask checkMaskTask) {
+        checkMaskTask.setTotalRecord(checkMaskTask.getRecordNumber()*(checkMaskTask.getPageNumber() - 1));
+        int recordCount = maskTaskService.getTaskRecordCount(checkMaskTask);
+        return Result.build(maskTaskService.getTaskRecord(checkMaskTask),recordCount, ResultCodeEnum.SUCCESS);
+    }
+
 
 
 
@@ -103,6 +110,21 @@ public class MaskTaskController {
             }
         }
     }
+
+    // 获取执行记录
+    @GetMapping("getExecRecord")
+    public Result getExecRecord(@RequestParam String userId,@RequestParam  Integer taskId,@RequestParam  Integer isType) {
+        if(isType == 0) {
+            return Result.ok(maskTaskService.getLocalExecRecordList(userId,taskId));
+        }else return Result.ok(maskTaskService.getLiveExecRecordList(userId,taskId));
+    }
+
+    // 执行记录的详细信息
+    @GetMapping("getExecRecordInfo")
+    public Result getExecRecordInfo(@RequestParam String userId,@RequestParam  Integer execId,@RequestParam  Integer isType) {
+        return Result.ok(maskTaskService.getExecRecordInfo(userId,execId,isType));
+    }
+
 
     // 查询脱敏数据集 getLocalDataList
     @GetMapping("getlocalData")

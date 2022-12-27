@@ -18,6 +18,7 @@ public class LocalMask {
     private String userName; // 用户名
     private String taskName;
     private String dataName;
+    private Integer dataType;
     private String originPath;
     private String maskPath;
     private String model;
