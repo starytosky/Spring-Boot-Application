@@ -14,10 +14,9 @@ public interface MaskDataService {
 
 	int deleteMaskData(String userId, Integer maskDataId);
 
-
-	MaskDataInfo getMaskDataInfo(int maskDataId);
-
 	List<MaskData> selectMaskData(CheckMaskData checkMaskData);
 
 	int MaskDataCount(CheckMaskData checkMaskData);
+
+	MaskDataInfo getMaskDataInfo(Integer maskDataId);
 }

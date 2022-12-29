@@ -13,7 +13,8 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/idata?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+#      url: jdbc:mysql://localhost:3306/idata?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://10.10.10.72:3306/idata?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
       #    url: jdbc:mysql://172.25.90.102:3306/idata?characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
       username: "root"
       password: "Jiaicecream1"
@@ -68,6 +69,8 @@ MaskRulePath: /home/ysjs3/java/upfile/maskRuleFile
 uploadFolder: /home/ysjs3/java/upfile/
 #uploadFolder: D:\\uploadFiles\\
 # ??python????
+
+maskLogPath: /home/ysjs3/java/logbacktest/
 
 LocalCodePath : /home/ysjs3/java/code/localVideoMask.py
 

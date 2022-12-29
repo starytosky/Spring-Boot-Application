@@ -46,7 +46,7 @@ public interface LocalMaskDao {
     @Select("select resource_name from resources where resource_id = #{resourceId}")
     String getResourceNameByResourceId(String resourceId);
 
-    @Select("select * from localmask,masktask where task_id = #{taskId} and localmask.task_id = masktask.task_id and user_id = #{userId} and isdelete=0")
+    @Select("select * from localmask,masktask where localmask.task_id = #{taskId} and localmask.task_id = masktask.task_id and user_id = #{userId} and isdelete=0")
     List<LocalMask> getExecRecordList(String userId,Integer taskId);
 
     @Select("SELECT\n" +
@@ -60,6 +60,7 @@ public interface LocalMaskDao {
             "\tlocalmask.data_name,\n" +
             "\tlocalmask.task_name,\n" +
             "\tlocalmask.is_type,\n" +
+            "\tlocalmask.log_path,\n" +
             "\tmaskrule.rule_name,\n" +
             "\tmaskrule.rule_desc,\n" +
             "\tmaskrule.limit_content,\n" +

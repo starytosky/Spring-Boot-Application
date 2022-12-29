@@ -45,12 +45,12 @@ public class ExecUtil {
 ////        }
 //        return result;
 //    }
-    public static boolean exec(String[] cmd, int timeOut) throws IOException, InterruptedException {
+    public static boolean exec(String[] cmd, int timeOut,String execId) throws IOException, InterruptedException {
 
         Process p = Runtime.getRuntime().exec(cmd);
-        new OutStream(p.getInputStream(),"INFO").start();
+        new OutStream(p.getInputStream(),"INFO",execId).start();
 
-        new OutStream(p.getErrorStream(),"Error").start();
+        new OutStream(p.getErrorStream(),"Error",execId).start();
 
         // exitValue 为0表示正常终止
         int exitValue = p.waitFor();

@@ -39,7 +39,7 @@ public interface LiveVideoMaskDao {
     @Select("select count(*) from livevideomask where user_id = #{userId} and isdelete=0")
     int getRecordCountByUserId(int user_id);
 
-    @Select("select * from livevideomask,masktask where task_id = #{taskId} and livevideomask.task_id = masktask.task_id and user_id = #{userId} and isdelete=0")
+    @Select("select * from livevideomask,masktask where livevideomask.task_id = #{taskId} and livevideomask.task_id = masktask.task_id and user_id = #{userId} and isdelete=0")
     List<LiveVideoMask> getExecRecordList(String userId, Integer taskId);
 
     @Select("SELECT\n" +
@@ -52,6 +52,7 @@ public interface LiveVideoMaskDao {
             "\tlivevideomask.start_time,\n" +
             "\tlivevideomask.end_time,\n" +
             "\tlivevideomask.is_type,\n" +
+            "\tlivevideomask.log_path,\n" +
             "\tmaskrule.rule_id,\n" +
             "\tmaskrule.rule_name,\n" +
             "\tmaskrule.rule_desc,\n" +

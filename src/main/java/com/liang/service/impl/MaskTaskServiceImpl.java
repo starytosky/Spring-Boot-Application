@@ -155,6 +155,7 @@ public class MaskTaskServiceImpl implements MaskTaskService {
         localvideoMask.setTaskId(maskTask.getTaskId());
         localvideoMask.setUserId(maskTask.getUserId());
         localvideoMask.setRuleId(maskTask.getRuleId());
+        localvideoMask.setMethodId(maskTask.getMethodId());
         localvideoMask.setTaskName(maskTask.getTaskName());
         localvideoMask.setOriginPath(maskTask.getDataPath());
         localvideoMask.setDataName(localMaskDao.getResourceNameByResourceId(maskTask.getDataId()));
@@ -229,6 +230,7 @@ public class MaskTaskServiceImpl implements MaskTaskService {
         liveVideoMask.setTaskId(maskTask.getTaskId());
         liveVideoMask.setUserId(maskTask.getUserId());
         liveVideoMask.setRuleId(maskTask.getRuleId());
+        liveVideoMask.setMethodId(maskTask.getMethodId());
         liveVideoMask.setTaskName(maskTask.getTaskName());
         liveVideoMask.setOutFilename(maskTask.getStreamMaskName());
         liveVideoMask.setStreamUrl(maskTask.getStreamUrl());

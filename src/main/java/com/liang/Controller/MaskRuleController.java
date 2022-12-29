@@ -44,7 +44,6 @@ public class MaskRuleController {
         if(maskrule != null) {
             return Result.ok(maskrule);
         }else return Result.build(500,"请输入正确的ruleId");
-
     }
 
     @GetMapping("deleteRule")
@@ -52,6 +51,15 @@ public class MaskRuleController {
         if(maskRuleService.deleteMaskRule(userId,ruleId) == 1) {
             return Result.ok("删除成功");
         }else return Result.build(500,"删除失败");
+    }
+
+    @PostMapping("updateMaskRule")
+    public Result updateMaskRule(@RequestBody Maskrule maskrule) {
+        Date timer = new Date();
+        maskrule.setTime(timer);
+        if(maskRuleService.updateMaskRule(maskrule) == 1) {
+            return Result.ok("更新成功");
+        }else return Result.build(500,"更新失败");
     }
 
     @GetMapping("getCount")

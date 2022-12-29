@@ -15,6 +15,7 @@ public class LocalMask {
     private Integer taskId;
     private String userId;
     private Integer ruleId;
+    private Integer methodId;
     private String userName; // 用户名
     private String taskName;
     private String dataName;
@@ -25,6 +26,7 @@ public class LocalMask {
     private Date startTime;
     private Date endTime;
     private Integer taskStatus;
+    private String logPath;
     private Integer isType;
     private Integer isdelete;
     private String method;

@@ -69,6 +69,11 @@ public class MaskRuleServiceImpl implements MaskRuleService {
         return maskrule;
     }
 
+    @Override
+    public int updateMaskRule(Maskrule maskrule) {
+        return maskRuleMapper.updateById(maskrule);
+    }
+
     // 获取文件内容返回字符串
     @Override
     public String getRuleContent(String rulePath) {

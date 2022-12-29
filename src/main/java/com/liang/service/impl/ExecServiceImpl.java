@@ -50,19 +50,25 @@ public class ExecServiceImpl implements IExecService {
     @Value("${HuaWeiLocation}")
     private String HuaWeiLocation;
 
+    @Value("${maskLogPath}")
+    private String maskLogPath;
+
     @Override
     @Async
     public void localVideoMask(String[] cmdStr, LocalMask localvideoMask) {
         // 操作三个表，本身的执行记录表（更新执行状态）、任务表（更新最新任务执行状态）、脱敏数据表（新增脱敏记录）
         try {
-            boolean isexeclocal = ExecUtil.exec(cmdStr, 100);
+            String logName = "local_" + String.valueOf(localvideoMask.getExecId());
+            boolean isexeclocal = ExecUtil.exec(cmdStr, 100, logName);
             Date endTime = new Date();
             localvideoMask.setEndTime(endTime);
+            // 更新日志地址
+            localvideoMask.setLogPath(maskLogPath + logName+".log");
+            localMaskMapper.updateById(localvideoMask);
             if (!isexeclocal){
                 // 向数据库写入信息
                 log.info("执行任务"+ localvideoMask.getExecId() +"脚本执行出错");
                 localvideoMask.setTaskStatus(2);
-                localMaskMapper.updateById(localvideoMask);
                 updateTaskStatus(0,localvideoMask.getTaskId(), localvideoMask.getExecId(),2);
                 log.info("任务"+localvideoMask.getTaskId()+"状态更新完成");
             }else {
@@ -86,9 +92,13 @@ public class ExecServiceImpl implements IExecService {
     public void liveVideoMask(String[] cmdStr, LiveVideoMask liveVideoMask) {
             // 这边执行异步上传文件操作
             try {
-                boolean isexeclive = ExecUtil.exec(cmdStr, 100);
+                String logName = "live_"+String.valueOf(liveVideoMask.getExecId());
+                boolean isexeclive = ExecUtil.exec(cmdStr, 100, logName);
+                // 更新日志地址
+                liveVideoMask.setLogPath(maskLogPath + logName+".log");
+                liveVideoMaskDao.updateLiveVieoMaskById(liveVideoMask);
                 if (!isexeclive) {
-                    setLiveTaskStatus(1,liveVideoMask);
+                    setLiveTaskStatus(2,liveVideoMask);
                     updateTaskStatus(1, liveVideoMask.getTaskId(), liveVideoMask.getExecId(), 2);
                 } else {
                     String filePath = liveVideoMask.getOutFilePath() + liveVideoMask.getOutFilename() + ".avi";
@@ -96,7 +106,7 @@ public class ExecServiceImpl implements IExecService {
                     File file = new File(filePath);
                     if (!file.exists() || !file.isFile()) {
                         log.info("脱敏视频文件生成失败");
-                        setLiveTaskStatus(1,liveVideoMask);
+                        setLiveTaskStatus(2,liveVideoMask);
                         updateTaskStatus(1, liveVideoMask.getTaskId(), liveVideoMask.getExecId(), 2);
                     }
                     long fileSize = file.length();
@@ -120,38 +130,35 @@ public class ExecServiceImpl implements IExecService {
                             // 创建输出桶路径文件夹
                             ObsUtil.CreateFolder(OutBucketName,liveVideoMask.getObsPath());
                             log.info("输出桶路径文件夹创建完成");
-                            setLiveTaskStatus(2,liveVideoMask);
                             Long trancoding = MpcUtil.createTranscodingTask(InBucketName, OutBucketName, HuaWeiLocation, uploadFileName, liveVideoMask.getObsPath(), liveVideoMask.getOutFilename());
                             if (trancoding != -1) {
-                                setLiveTaskStatus(8,liveVideoMask);
                                 TimerTask task = new TimerTask() {
                                     public void run() {
                                         String isStaus = MpcUtil.getTaskStatus(trancoding);
                                         if (isStaus.equals("SUCCEEDED") || isStaus.equals("FAILED")) {
                                             log.info("线程停止");
                                             if (isStaus.equals("SUCCEEDED")) {
-                                                setLiveTaskStatus(4,liveVideoMask);
+                                                // 把转码后的视频下载回本地
+                                                String objectName = liveVideoMask.getObsPath() + liveVideoMask.getOutFilename()+".mp4";
+                                                boolean download = ObsUtil.downloadFile(OutBucketName,objectName,liveVideoMask.getOutFilePath() + liveVideoMask.getOutFilename()+".mp4");
+                                                // 向数据库写入一条信息，表明转码完成。
+                                                if(download) {
+                                                    log.info("文件下载完成");
+                                                    setLiveTaskStatus(1,liveVideoMask);
+                                                    // 向数据库插入信息
+                                                    liveSetMaskData(liveVideoMask);
+                                                    updateTaskStatus(1, liveVideoMask.getTaskId(), liveVideoMask.getExecId(), 1);
+                                                    log.info("脱敏完成");
+                                                }else {
+                                                    log.info("文件下载失败");
+                                                    setLiveTaskStatus(2,liveVideoMask);
+                                                    updateTaskStatus(1, liveVideoMask.getTaskId(), liveVideoMask.getExecId(), 2);
+                                                }
                                             }else {
-                                                setLiveTaskStatus(5,liveVideoMask);
+                                                setLiveTaskStatus(2,liveVideoMask);
                                                 updateTaskStatus(1, liveVideoMask.getTaskId(), liveVideoMask.getExecId(), 2);
                                             }
-                                            // 把转码后的视频下载回本地
-                                            String objectName = liveVideoMask.getObsPath() + liveVideoMask.getOutFilename()+".mp4";
-                                            boolean download = ObsUtil.downloadFile(OutBucketName,objectName,liveVideoMask.getOutFilePath() + liveVideoMask.getOutFilename()+".mp4");
-                                            // 向数据库写入一条信息，表明转码完成。
-                                            if(download) {
-                                                log.info("文件下载完成");
-                                                setLiveTaskStatus(6,liveVideoMask);
-                                                // 向数据库插入信息
-                                                liveSetMaskData(liveVideoMask);
-                                                updateTaskStatus(1, liveVideoMask.getTaskId(), liveVideoMask.getExecId(), 1);
-                                            }else {
-                                                log.info("文件下载失败");
-                                                setLiveTaskStatus(7,liveVideoMask);
-                                                updateTaskStatus(1, liveVideoMask.getTaskId(), liveVideoMask.getExecId(), 2);
-                                            }
-                                            // 这边执行一个函数
-                                            log.info("脱敏完成");
+                                            // 线程停止执行
                                             this.cancel();
                                         }
                                     }
@@ -160,12 +167,12 @@ public class ExecServiceImpl implements IExecService {
                                 time.schedule(task, 3000, 10000);
                             }else {
                                 log.info("转码任务创建失败");
-                                setLiveTaskStatus(9,liveVideoMask);
+                                setLiveTaskStatus(2,liveVideoMask);
                                 updateTaskStatus(1, liveVideoMask.getTaskId(), liveVideoMask.getExecId(), 2);
                             }
                         } else {
                             log.info("文件上传失败");
-                            setLiveTaskStatus(3,liveVideoMask);
+                            setLiveTaskStatus(2,liveVideoMask);
                             updateTaskStatus(1, liveVideoMask.getTaskId(), liveVideoMask.getExecId(), 2);
                         }
                     }
@@ -187,10 +194,13 @@ public class ExecServiceImpl implements IExecService {
             maskData.setExecId(localvideoMask.getExecId());
             maskData.setTaskId(localvideoMask.getTaskId());
             maskData.setUserId(localvideoMask.getUserId());
+            maskData.setRuleId(localvideoMask.getRuleId());
+            maskData.setMethodId(localvideoMask.getMethodId());
             maskData.setDataType(0);
             maskData.setDataName(localvideoMask.getDataName());
             maskData.setMaskPath(localvideoMask.getMaskPath());
             maskData.setIsType(0);
+            maskData.setMethod(localvideoMask.getMethod());
             Date endTime = new Date();
             maskData.setTime(endTime);
             maskDataMapper.insert(maskData);
@@ -201,10 +211,13 @@ public class ExecServiceImpl implements IExecService {
             maskData.setExecId(liveVideoMask.getExecId());
             maskData.setTaskId(liveVideoMask.getTaskId());
             maskData.setUserId(liveVideoMask.getUserId());
+            maskData.setRuleId(liveVideoMask.getRuleId());
+            maskData.setMethodId(liveVideoMask.getMethodId());
             maskData.setDataType(0);
             maskData.setMaskPath(liveVideoMask.getOutFilePath() + liveVideoMask.getOutFilename() + ".mp4");
             maskData.setDataName(liveVideoMask.getOutFilename());
             maskData.setIsType(1);
+            maskData.setMethod(liveVideoMask.getMethod());
             Date endTime = new Date();
             maskData.setTime(endTime);
             maskDataMapper.insert(maskData);

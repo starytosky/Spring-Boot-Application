@@ -15,6 +15,7 @@ public class LiveVideoMask {
     private Integer taskId;
     private String userId;
     private Integer ruleId;
+    private Integer methodId;
     private String userName;
     private String taskName;
     private String streamUrl;
@@ -29,6 +30,7 @@ public class LiveVideoMask {
     private String model;
     private Date startTime;
     private Date endTime;
+    private String logPath;
     private Integer isType;
     private Integer isdelete;
 }

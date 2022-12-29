@@ -24,4 +24,6 @@ public interface MaskRuleService {
     String getRuleContent(String rulePath);
 
     Maskrule getMaskRuleDetailByRuleId(Integer ruleId);
+
+    int updateMaskRule(Maskrule maskrule);
 }

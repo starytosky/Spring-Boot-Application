@@ -14,10 +14,13 @@ public class MaskData {
   private String userId;
   private Integer taskId;
   private Integer execId;
+  private Integer ruleId;
+  private Integer methodId;
   private String maskPath;
   private Integer dataType;
   private Integer isType;
   private String dataName;
   private Date time;
   private Integer isDelete;
+  private String method;
 }

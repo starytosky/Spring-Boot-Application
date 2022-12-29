@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+
+    <property name="pattern" value=" %d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%thread] %c %M %L  %m%n"></property>
+
+<!--    <property name="logDir" value="./logs/"></property>-->
+
+    <appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <!--discriminator鉴别器，根据taskId这个key对应的value鉴别日志事件，然后委托给具体appender写日志-->
+        <discriminator>
+            <key>taskId</key>
+            <defaultValue>default</defaultValue>
+        </discriminator>
+        <sift>
+            <!--具体的写日志appender，每一个taskId创建一个文件-->
+            <appender name="File-${taskId}" class="ch.qos.logback.core.FileAppender">
+                <file>./logbacktest/${taskId}.log</file>
+                <append>true</append>
+                <encoder charset="UTF-8">
+                    <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] %-5level %logger{35} - %msg%n</pattern>
+                </encoder>
+            </appender>
+        </sift>
+    </appender>
+
+<!--    <appender name="fileAppender" class="ch.qos.logback.core.FileAppender">-->
+<!--        &lt;!&ndash;配置日志输出格式&ndash;&gt;-->
+<!--        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
+<!--            <pattern>${pattern}</pattern>-->
+<!--        </encoder>-->
+
+<!--        <file>${logDir}/filelog.log</file>-->
+<!--    </appender>-->
+
+<!--    &lt;!&ndash; 可拆分归档的文件&ndash;&gt;-->
+<!--    <appender name="roll" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+<!--        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
+<!--            <pattern>${pattern}</pattern>-->
+<!--        </encoder>-->
+
+<!--        <file>${logDir}/filelog.log</file>-->
+
+<!--        &lt;!&ndash; 指定拆分规则&ndash;&gt;-->
+<!--        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">-->
+
+<!--            <fileNamePattern>${logDir}/roll.%d{yyyy-MM-dd}.log%i.gz</fileNamePattern>-->
+<!--            <maxFileSize>1MB</maxFileSize>-->
+<!--        </rollingPolicy>-->
+<!--    </appender>-->
+
+<!--    &lt;!&ndash;使用过滤器 &ndash;&gt;-->
+<!--    <appender name="filterAppender" class="ch.qos.logback.core.FileAppender">-->
+<!--        &lt;!&ndash;配置日志输出格式&ndash;&gt;-->
+<!--        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
+<!--            <pattern>${pattern}</pattern>-->
+<!--        </encoder>-->
+
+<!--        <file>${logDir}/filterlog.log</file>-->
+
+<!--        <filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+
+<!--        </filter>-->
+<!--    </appender>-->
+
+    <!--配置控制台appender-->
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+
+        <!--配置日志输出格式-->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${pattern}</pattern>
+        </encoder>
+    </appender>
+
+
+    <root level="INFO">
+        <appender-ref ref="consoleAppender" />
+<!--        <appender-ref ref="fileAppender" />-->
+        <appender-ref ref="SIFT" />
+    </root>
+
+
+</configuration>

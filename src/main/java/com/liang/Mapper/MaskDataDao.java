@@ -15,8 +15,6 @@ import java.util.List;
 @Mapper
 @Repository
 public interface MaskDataDao {
-	@Select("SELECT maskdata.mask_data_id,maskdata.data_name,masktask.task_name,maskdata.time,maskdata.is_type,maskdata.data_type,userinfo.user_name,maskrule.rule_name,maskrule.limit_content,maskrule.rule_desc,maskrule.limit_form,maskrule.rule_type,maskrule.rule_resource,maskmethod.method_name,localmask.method FROM maskdata,userinfo,maskrule,masktask,localmask,maskmethod WHERE maskdata.user_id = userinfo.user_id AND maskdata.task_id = masktask.task_id AND masktask.rule_id = maskrule.rule_id AND localmask.exec_id = maskdata.exec_id AND maskdata.isdelete = 0 AND maskdata.mask_data_id = #{maskDataId}")
-	MaskDataInfo getMaskDataInfo(int maskDataId);
 
 	@SelectProvider(type = MaskDataSql.class, method = "selectMaskData")
 	List<MaskData> selectMaskData(CheckMaskData checkMaskData);
@@ -26,4 +24,33 @@ public interface MaskDataDao {
 
 	@Update("update maskdata set isdelete = 1 where user_id = #{userId} and mask_data_id = #{maskDataId}")
 	int deleteMaskData(String userId,int maskDataId);
+
+	@Select("SELECT\n" +
+			"\tmaskdata.mask_data_id,\n" +
+			"\tmaskdata.data_name,\n" +
+			"\tmasktask.task_name,\n" +
+			"\tmaskdata.TIME,\n" +
+			"\tmaskdata.is_type,\n" +
+			"\tmaskdata.data_type,\n" +
+			"\tuserinfo.user_name,\n" +
+			"\tmaskrule.rule_name,\n" +
+			"\tmaskrule.limit_content,\n" +
+			"\tmaskrule.rule_desc,\n" +
+			"\tmaskrule.limit_form,\n" +
+			"\tmaskrule.rule_type,\n" +
+			"\tmaskrule.rule_resource,\n" +
+			"\tmaskmethod.method_name, \n" +
+			"\tmasktask.method, \n" +
+			"\tmaskrule.isupload, \n" +
+			"\tmaskrule.rule_path, \n" +
+			"\tmaskmethod.mask_method_id \n" +
+			"FROM\n" +
+			"\tmaskdata\n" +
+			"\tINNER JOIN userinfo ON maskdata.user_id = userinfo.user_id\n" +
+			"\tINNER JOIN maskrule ON maskdata.rule_id = maskrule.rule_id\n" +
+			"\tINNER JOIN maskmethod ON maskdata.method_id = maskmethod.mask_method_id\n" +
+			"\tINNER JOIN masktask ON maskdata.task_id = masktask.task_id\n" +
+			"WHERE maskdata.mask_data_id = #{maskDataId} AND\n" +
+			"\tmaskdata.isdelete = 0")
+	MaskDataInfo getMaskDataInfo(Integer maskDataId);
 }
