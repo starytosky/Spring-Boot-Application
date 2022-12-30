@@ -15,7 +15,7 @@ import java.util.List;
 public interface LiveVideoMaskDao {
 
     //添加
-    @Insert("insert into livevideomask(user_id,stream_url,out_file_path,out_filename,obs_path,task_status,use_method,model,start_time,end_time,isdelete) values(#{userId},#{streamUrl},#{outFilePath},#{outFilename},#{obsPath},#{taskStatus},#{useMethod},#{model},#{startTime},#{endTime},#{isdelete})")
+    @Insert("insert into livevideomask(exec_id,user_id,stream_url,out_file_path,out_filename,obs_path,task_status,use_method,model,start_time,end_time,isdelete) values(#{execId},#{userId},#{streamUrl},#{outFilePath},#{outFilename},#{obsPath},#{taskStatus},#{useMethod},#{model},#{startTime},#{endTime},#{isdelete})")
     @Options(useGeneratedKeys=true, keyProperty="taskId")
     int insert(LiveVideoMask liveVideoMask);
 
@@ -26,7 +26,7 @@ public interface LiveVideoMaskDao {
     int GetUserTaskCountByUserId(LiveVideoMask liveVideoMask);
 
     @Select("select count(*) from livevideomask where task_id = #{taskId}")
-    int GetUserTaskCountByTaskId(Integer taskId);
+    int GetUserTaskCountByTaskId(String taskId);
 
 
 //    @Select("select * from livevideomask where user_id = #{userId} and task_status = #{status} LIMIT #{totalRecord},#{recordNumber}")
@@ -34,13 +34,13 @@ public interface LiveVideoMaskDao {
     List<LiveVideoMask> GetUserTaskByUserId(CheckMaskTask checkMaskTask);
 
     @Update("update livevideomask set isdelete = 1 where user_id = #{userId} and task_id = #{taskId}")
-    int deleteTask(Integer userId,Integer taskId);
+    int deleteTask(String userId,String taskId);
 
     @Select("select count(*) from livevideomask where user_id = #{userId} and isdelete=0")
-    int getRecordCountByUserId(int user_id);
+    int getRecordCountByUserId(String user_id);
 
-    @Select("select * from livevideomask,masktask where livevideomask.task_id = #{taskId} and livevideomask.task_id = masktask.task_id and user_id = #{userId} and isdelete=0")
-    List<LiveVideoMask> getExecRecordList(String userId, Integer taskId);
+    @Select("select * from livevideomask,masktask where livevideomask.task_id = #{taskId} and livevideomask.task_id = masktask.task_id and livevideomask.user_id = #{userId} and livevideomask.isdelete=0")
+    List<LiveVideoMask> getExecRecordList(String userId, String taskId);
 
     @Select("SELECT\n" +
             "\tlivevideomask.exec_id,\n" +
@@ -70,7 +70,7 @@ public interface LiveVideoMaskDao {
             "\tINNER JOIN maskmethod ON masktask.method_id = maskmethod.mask_method_id \n" +
             "WHERE\n" +
             "\tlivevideomask.exec_id = #{execId}")
-    ExecRecordInfo getExecRecordInfo(Integer execId);
+    ExecRecordInfo getExecRecordInfo(String execId);
 
 
 }

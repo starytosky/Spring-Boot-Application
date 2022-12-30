@@ -35,9 +35,9 @@ public interface MaskTaskService {
 
     int updateMaskTask(MaskTask maskTask);
 
-    String getMaskRuleByRuleId(Integer ruleId);
+    String getMaskRuleByRuleId(String ruleId);
 
-    MaskTask getMaskTaskById(Integer taskId);
+    MaskTask getMaskTaskById(String taskId);
 
     String getMaskMethodByMethodId(Integer metnodId);
 
@@ -51,11 +51,11 @@ public interface MaskTaskService {
     int getTaskRecordCount(CheckMaskTask checkMaskTask);
 
     // 获取静态执行记录列表
-    List<LocalMask> getLocalExecRecordList(String userId, Integer taskId);
+    List<LocalMask> getLocalExecRecordList(String userId, String taskId);
     // 获取动态执行记录
-    List<LiveVideoMask> getLiveExecRecordList(String userId, Integer taskId);
+    List<LiveVideoMask> getLiveExecRecordList(String userId, String taskId);
 
-    ExecRecordInfo getExecRecordInfo(String userId, Integer execId,Integer isType);
+    ExecRecordInfo getExecRecordInfo(String userId, String execId,Integer isType);
 //
 //    // readVideoFrame
 //    boolean readVideoFrame();

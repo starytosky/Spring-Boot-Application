@@ -2,6 +2,7 @@ package com.liang.service;
 
 import com.liang.Rep.*;
 import com.liang.Res.MaskDataInfo;
+import com.liang.Res.MaskDataList;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface MaskDataService {
 
 	int deleteMaskData(String userId, Integer maskDataId);
 
-	List<MaskData> selectMaskData(CheckMaskData checkMaskData);
+	List<MaskDataList> selectMaskData(CheckMaskData checkMaskData);
 
 	int MaskDataCount(CheckMaskData checkMaskData);
 

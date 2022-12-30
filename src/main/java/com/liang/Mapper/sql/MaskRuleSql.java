@@ -13,13 +13,13 @@ public class MaskRuleSql {
                 if(checkRule.getUserId() != null){
                     WHERE("maskrule.user_id = userinfo.user_id");
                     WHERE("maskrule.user_id = #{userId}");
-                    WHERE("isdelete = 0");
+                    WHERE("maskrule.isdelete = 0");
                 }
                 if(checkRule.getRuleName() != null && checkRule.getRuleName().length()>0){
-                    WHERE("rule_name = #{ruleName}");
+                    WHERE("maskrule.rule_name = #{ruleName}");
                 }
                 if(checkRule.getDataType() != null){
-                    WHERE("data_type = #{dataType}");
+                    WHERE("maskrule.data_type = #{dataType}");
                 }
                 if(checkRule.getTotalRecord() != null){
                     String str = checkRule.getTotalRecord().toString() + ","+checkRule.getRecordNumber().toString();
@@ -37,13 +37,13 @@ public class MaskRuleSql {
                 if(checkRule.getUserId() != null){
                     WHERE("maskrule.user_id = userinfo.user_id");
                     WHERE("maskrule.user_id = #{userId}");
-                    WHERE("isdelete = 0");
+                    WHERE("maskrule.isdelete = 0");
                 }
                 if(checkRule.getRuleName() != null && checkRule.getRuleName().length()>0){
-                    WHERE("rule_name = #{ruleName}");
+                    WHERE("maskrule.rule_name = #{ruleName}");
                 }
                 if(checkRule.getDataType() != null){
-                    WHERE("data_type = #{dataType}");
+                    WHERE("maskrule.data_type = #{dataType}");
                 }
             }
         }.toString();

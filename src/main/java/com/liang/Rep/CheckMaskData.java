@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class CheckMaskData {
 	private String userId;
-	private Integer typeId;
+	private Integer isType;
 	private String taskName;
 	private Integer dataType;
 	private Integer pageNumber;

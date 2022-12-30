@@ -4,6 +4,7 @@ import com.liang.Mapper.sql.LocalMaskSql;
 import com.liang.Mapper.sql.MaskDataSql;
 import com.liang.Rep.*;
 import com.liang.Res.MaskDataInfo;
+import com.liang.Res.MaskDataList;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -17,7 +18,7 @@ import java.util.List;
 public interface MaskDataDao {
 
 	@SelectProvider(type = MaskDataSql.class, method = "selectMaskData")
-	List<MaskData> selectMaskData(CheckMaskData checkMaskData);
+	List<MaskDataList> selectMaskData(CheckMaskData checkMaskData);
 
 	@SelectProvider(type = MaskDataSql.class, method = "MaskDataCount")
 	int MaskDataCount(CheckMaskData checkMaskData);

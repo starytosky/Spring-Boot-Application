@@ -5,6 +5,7 @@ import com.liang.Mapper.MaskRuleMapper;
 import com.liang.Rep.CheckRule;
 import com.liang.Rep.Maskrule;
 import com.liang.Mapper.MaskRuleDao;
+import com.liang.common.util.IdRandomUtils;
 import com.liang.common.util.Tool;
 import com.liang.service.MaskRuleService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ public class MaskRuleServiceImpl implements MaskRuleService {
 
     @Override
     public int addMaskRule(Maskrule maskrule) {
+        maskrule.setRuleId(IdRandomUtils.getRandomID().toString());
         return maskRuleMapper.insert(maskrule);
     }
 
@@ -41,7 +43,7 @@ public class MaskRuleServiceImpl implements MaskRuleService {
     }
 
     @Override
-    public int deleteMaskRule(String userId, Integer ruleId) {
+    public int deleteMaskRule(String userId, String ruleId) {
         return maskRuleDao.deleteRule(userId,ruleId);
     }
 
@@ -51,7 +53,7 @@ public class MaskRuleServiceImpl implements MaskRuleService {
     }
 
     @Override
-    public Maskrule getMaskRuleById(Integer ruleId) {
+    public Maskrule getMaskRuleById(String ruleId) {
 //        QueryWrapper<Maskrule> wrapper = new QueryWrapper<>();
 //        wrapper.eq("rule_id",ruleId);
 //        wrapper.eq("isdelete",0);
@@ -59,7 +61,7 @@ public class MaskRuleServiceImpl implements MaskRuleService {
         return maskRuleDao.getRecordByRuleId(ruleId);
     }
 
-    public Maskrule getMaskRuleDetailByRuleId(Integer ruleId) {
+    public Maskrule getMaskRuleDetailByRuleId(String ruleId) {
         Maskrule maskrule = maskRuleDao.getRecordByRuleId(ruleId);
         if(maskrule != null) {
             if(maskrule.getIsupload()==1) {

@@ -10,11 +10,11 @@ import lombok.Data;
 @TableName("maskdata")
 public class MaskData {
   @TableId(value = "mask_data_id",type = IdType.AUTO)
-  private Integer maskDataId;
+  private String maskDataId;
   private String userId;
-  private Integer taskId;
-  private Integer execId;
-  private Integer ruleId;
+  private String taskId;
+  private String execId;
+  private String ruleId;
   private Integer methodId;
   private String maskPath;
   private Integer dataType;

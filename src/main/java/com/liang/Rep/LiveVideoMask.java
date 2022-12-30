@@ -11,10 +11,10 @@ import java.util.Date;
 @TableName("livevideomask")
 public class LiveVideoMask {
     @TableId(value = "exec_id",type = IdType.AUTO)
-    private Integer execId;
-    private Integer taskId;
+    private String execId;
+    private String taskId;
     private String userId;
-    private Integer ruleId;
+    private String ruleId;
     private Integer methodId;
     private String userName;
     private String taskName;

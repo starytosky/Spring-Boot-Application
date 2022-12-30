@@ -14,7 +14,7 @@ import java.util.List;
 public interface MaskRuleDao {
 
 //    添加规则
-    @Insert("insert into maskrule(user_id,rule_name,data_type,isupload,rule_path,rule_desc,limit_content,limit_form,rule_type,rule_resource,time) values(#{userId},#{ruleName},#{dataType},#{isupload},#{rulePath},#{ruleDesc},#{limitContent},#{limitForm},#{ruleType},#{ruleResource},#{time})")
+    @Insert("insert into maskrule(rule_id,user_id,rule_name,data_type,isupload,rule_path,rule_desc,limit_content,limit_form,rule_type,rule_resource,time) values(#{ruleId},#{userId},#{ruleName},#{dataType},#{isupload},#{rulePath},#{ruleDesc},#{limitContent},#{limitForm},#{ruleType},#{ruleResource},#{time})")
     @Options(useGeneratedKeys=true, keyProperty="ruleId")
     int insert(Maskrule maskrule);
 
@@ -25,13 +25,13 @@ public interface MaskRuleDao {
     int selectRuleCount(CheckRule checkRule);
 
     @Select("select * from maskrule,userinfo where maskrule.user_id = userinfo.user_id AND maskrule.rule_id = #{ruleId} AND  isdelete=0")
-    Maskrule getRecordByRuleId(int ruleId);
+    Maskrule getRecordByRuleId(String ruleId);
 
 
 
 //    删除
     @Update("update maskrule set isdelete = 1 where user_id = #{userId} and rule_id = #{ruleId}")
-    int deleteRule(String userId,Integer ruleId);
+    int deleteRule(String userId,String ruleId);
 
     @Select("select count(*) from maskrule where user_id = #{userId} and isdelete=0")
     int getRecordCountByUserId(String user_id);

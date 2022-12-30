@@ -11,7 +11,7 @@ import java.util.Date;
 @TableName("maskrule")
 public class Maskrule {
   @TableId(value = "rule_id",type = IdType.AUTO)
-  private Integer ruleId;
+  private String ruleId;
   private String userId;
   private String ruleName;
   private String userName;

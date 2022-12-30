@@ -15,14 +15,14 @@ public class liveVideoMaskSql {
                 if(checkMaskTask.getUserId() != null){
                     WHERE("livevideomask.user_id = #{userId}");
                     WHERE("livevideomask.user_id = userinfo.user_id");
-                    WHERE("isdelete = 0");
+                    WHERE("livevideomask.isdelete = 0");
                 }
                 if(checkMaskTask.getTaskName() != null && checkMaskTask.getTaskName().length()>0){
 
-                    WHERE("task_name = #{taskName}");
+                    WHERE("livevideomask.task_name = #{taskName}");
                 }
                 if(checkMaskTask.getTaskStatus() != null){
-                    WHERE("task_status = #{taskStatus}");
+                    WHERE("livevideomask.task_status = #{taskStatus}");
                 }
                 if(checkMaskTask.getTotalRecord() != null){
                     String str = checkMaskTask.getTotalRecord().toString() + ","+ checkMaskTask.getRecordNumber().toString();

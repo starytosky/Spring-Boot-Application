@@ -15,15 +15,15 @@ public interface MaskRuleService {
 
     int selectRuleCount(CheckRule checkRule);
 
-    int deleteMaskRule(String userId,Integer ruleId);
+    int deleteMaskRule(String userId,String ruleId);
 
     int getRecordCountByUserId(String userId);
 
-    Maskrule getMaskRuleById(Integer ruleId);
+    Maskrule getMaskRuleById(String ruleId);
 
     String getRuleContent(String rulePath);
 
-    Maskrule getMaskRuleDetailByRuleId(Integer ruleId);
+    Maskrule getMaskRuleDetailByRuleId(String ruleId);
 
     int updateMaskRule(Maskrule maskrule);
 }

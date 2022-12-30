@@ -5,6 +5,7 @@ import com.liang.Rep.LiveVideoMask;
 import com.liang.Rep.LocalMask;
 import com.liang.Rep.MaskData;
 import com.liang.common.util.ExecUtil;
+import com.liang.common.util.IdRandomUtils;
 import com.liang.common.util.MpcUtil;
 import com.liang.common.util.ObsUtil;
 import com.liang.service.IExecService;
@@ -191,6 +192,7 @@ public class ExecServiceImpl implements IExecService {
 
         public void localSetMaskData(LocalMask localvideoMask) {
             MaskData maskData = new MaskData();
+            maskData.setMaskDataId(IdRandomUtils.getRandomID().toString());
             maskData.setExecId(localvideoMask.getExecId());
             maskData.setTaskId(localvideoMask.getTaskId());
             maskData.setUserId(localvideoMask.getUserId());
@@ -208,6 +210,7 @@ public class ExecServiceImpl implements IExecService {
 
         public void liveSetMaskData(LiveVideoMask liveVideoMask ) {
             MaskData maskData = new MaskData();
+            maskData.setMaskDataId(IdRandomUtils.getRandomID().toString());
             maskData.setExecId(liveVideoMask.getExecId());
             maskData.setTaskId(liveVideoMask.getTaskId());
             maskData.setUserId(liveVideoMask.getUserId());
@@ -223,14 +226,14 @@ public class ExecServiceImpl implements IExecService {
             maskDataMapper.insert(maskData);
         }
 
-    public void updateTaskStatus(Integer isType,Integer taskId, Integer execId,Integer status) {
-        if(isType==0) {
-            if (execId == localMaskDao.getRecordCountByTaskId(taskId))
-                maskTaskDao.updateTaskStatus(taskId, status);
-        }else {
-            if(execId == liveVideoMaskDao.GetUserTaskCountByTaskId(taskId)){
-                maskTaskDao.updateTaskStatus(taskId, status);
-            }
-        }
+    public void updateTaskStatus(Integer isType,String taskId, String execId,Integer status) {
+//        if(isType==0) {
+//            if (execId == localMaskDao.getRecordCountByTaskId(taskId))
+//                maskTaskDao.updateTaskStatus(taskId, status);
+//        }else {
+//            if(execId == liveVideoMaskDao.GetUserTaskCountByTaskId(taskId)){
+//                maskTaskDao.updateTaskStatus(taskId, status);
+//            }
+//        }
     }
 }

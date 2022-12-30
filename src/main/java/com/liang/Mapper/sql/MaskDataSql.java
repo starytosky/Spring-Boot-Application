@@ -18,7 +18,7 @@ public class MaskDataSql {
 				if(checkMaskData.getTaskName() != null && checkMaskData.getTaskName().length()>0){
 					WHERE("masktask.task_name = #{taskName}");
 				}
-				if(checkMaskData.getTypeId() != null){
+				if(checkMaskData.getIsType() != null){
 					WHERE("maskdata.is_type = #{isType}");
 				}
 				if(checkMaskData.getDataType() != null){
@@ -46,7 +46,7 @@ public class MaskDataSql {
 				if(checkMaskData.getTaskName() != null && checkMaskData.getTaskName().length()>0){
 					WHERE("masktask.task_name = #{taskName}");
 				}
-				if(checkMaskData.getTypeId() != null){
+				if(checkMaskData.getIsType() != null){
 					WHERE("maskdata.is_type = #{isType}");
 				}
 				if(checkMaskData.getDataType() != null){

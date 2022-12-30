@@ -6,7 +6,7 @@ import java.util.Date;
 
 @Data
 public class MaskDataInfo {
-	private Integer maskDataId;
+	private String maskDataId;
 	private Integer maskMethodId;
 	private String dataName;
 	private String taskName;

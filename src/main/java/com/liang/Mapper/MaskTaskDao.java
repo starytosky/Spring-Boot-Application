@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper
 @Repository
 public interface MaskTaskDao {
-    @Insert("insert into masktask(user_id,rule_id,method_id,task_name,task_status,is_type,task_desc,data_id,data_path,data_type,stream_url,method,time) values(#{userId},#{ruleId},#{methodId},#{taskName},#{taskStatus},#{isType},#{taskDesc},#{dataId},#{dataPath},#{dataType},#{streamUrl},#{method},#{time})")
+    @Insert("insert into masktask(task_id,user_id,rule_id,method_id,task_name,task_status,is_type,task_desc,data_id,data_path,data_type,stream_url,method,time) values(#{taskId},#{userId},#{ruleId},#{methodId},#{taskName},#{taskStatus},#{isType},#{taskDesc},#{dataId},#{dataPath},#{dataType},#{streamUrl},#{method},#{time})")
     @Options(useGeneratedKeys=true, keyProperty="taskId")
     int createMaskTask(MaskTask maskTask);
 
@@ -23,7 +23,7 @@ public interface MaskTaskDao {
     int updateMaskTask(MaskTask maskTask);
 
     @Update("update masktask set task_status=#{status} where task_id = #{taskId}")
-    int updateTaskStatus(Integer taskId,Integer status);
+    int updateTaskStatus(String taskId,Integer status);
 
     @SelectProvider(type = MaskTaskSql.class, method = "selectByTaskRecord")
     List<MaskTask> getTaskRecord(CheckMaskTask checkMaskTask);

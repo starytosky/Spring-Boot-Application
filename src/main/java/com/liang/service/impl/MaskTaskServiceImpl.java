@@ -4,6 +4,7 @@ import com.liang.Mapper.*;
 import com.liang.Rep.*;
 import com.liang.Res.ExecRecordInfo;
 import com.liang.Res.LocalData;
+import com.liang.common.util.IdRandomUtils;
 import com.liang.common.util.ObsUtil;
 import com.liang.service.MaskTaskService;
 import com.liang.service.IExecService;
@@ -151,6 +152,7 @@ public class MaskTaskServiceImpl implements MaskTaskService {
     public LocalMask setLocalMask(MaskTask maskTask) {
         LocalMask localvideoMask = new LocalMask();
         // 根据userid local taskid execid 生成对应文件夹
+        localvideoMask.setExecId(IdRandomUtils.getRandomID().toString());
         localvideoMask.setModel( maskRuleService.getMaskRuleById(maskTask.getRuleId()).getLimitContent());
         localvideoMask.setTaskId(maskTask.getTaskId());
         localvideoMask.setUserId(maskTask.getUserId());
@@ -226,6 +228,7 @@ public class MaskTaskServiceImpl implements MaskTaskService {
     public LiveVideoMask setLiveMask(MaskTask maskTask) {
         LiveVideoMask liveVideoMask = new LiveVideoMask();
         // 根据userid local taskid execid 生成对应文件夹
+        liveVideoMask.setExecId(IdRandomUtils.getRandomID().toString());
         liveVideoMask.setModel( maskRuleService.getMaskRuleById(maskTask.getRuleId()).getLimitContent());
         liveVideoMask.setTaskId(maskTask.getTaskId());
         liveVideoMask.setUserId(maskTask.getUserId());
@@ -277,7 +280,7 @@ public class MaskTaskServiceImpl implements MaskTaskService {
     }
 
     @Override
-    public String getMaskRuleByRuleId(Integer ruleId) {
+    public String getMaskRuleByRuleId(String ruleId) {
         Maskrule maskrule = maskRuleService.getMaskRuleById(ruleId);
         // 判断是字符串还是文件
         if(maskrule == null) {
@@ -292,7 +295,7 @@ public class MaskTaskServiceImpl implements MaskTaskService {
     }
 
     @Override
-    public MaskTask getMaskTaskById(Integer taskId) {
+    public MaskTask getMaskTaskById(String taskId) {
         return maskTaskMapper.selectById(taskId);
     }
 
@@ -322,17 +325,17 @@ public class MaskTaskServiceImpl implements MaskTaskService {
     }
 
     @Override
-    public List<LocalMask> getLocalExecRecordList(String userId, Integer taskId) {
+    public List<LocalMask> getLocalExecRecordList(String userId, String taskId) {
         return localMaskDao.getExecRecordList(userId,taskId);
     }
 
     @Override
-    public List<LiveVideoMask> getLiveExecRecordList(String userId, Integer taskId) {
+    public List<LiveVideoMask> getLiveExecRecordList(String userId, String taskId) {
         return liveVideoMaskDao.getExecRecordList(userId,taskId);
     }
 
     @Override
-    public ExecRecordInfo getExecRecordInfo(String userId, Integer execId, Integer isType) {
+    public ExecRecordInfo getExecRecordInfo(String userId, String execId, Integer isType) {
         ExecRecordInfo execRecordInfo;
         if(isType==0) {
             execRecordInfo = localMaskDao.getExecRecordInfo(execId);

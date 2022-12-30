@@ -4,6 +4,7 @@ import com.liang.Rep.CheckMaskData;
 import com.liang.Rep.CheckMaskTask;
 import com.liang.Rep.MaskData;
 import com.liang.Res.MaskDataInfo;
+import com.liang.Res.MaskDataList;
 import com.liang.common.util.Result;
 import com.liang.common.util.ResultCodeEnum;
 import com.liang.service.MaskDataService;
@@ -31,7 +32,7 @@ public class MaskDataController {
 	@GetMapping("checkMaskData")
 	public Result checkMaskData(CheckMaskData checkMaskData) {
 		checkMaskData.setTotalRecord(checkMaskData.getRecordNumber()* (checkMaskData.getPageNumber() -1));
-		List<MaskData> maskDataList = maskDataService.selectMaskData(checkMaskData);
+		List<MaskDataList> maskDataList = maskDataService.selectMaskData(checkMaskData);
 		int maskDataCount = maskDataService.MaskDataCount(checkMaskData);
 		if (maskDataList!= null) {
 			return Result.build(maskDataList,maskDataCount, ResultCodeEnum.SUCCESS);

@@ -39,7 +39,7 @@ public class MaskRuleController {
     }
 
     @GetMapping("getMaskRuleDetail")
-    public Result getMaskRuleDetailByRuleId(@RequestParam Integer ruleId) {
+    public Result getMaskRuleDetailByRuleId(@RequestParam String ruleId) {
         Maskrule maskrule = maskRuleService.getMaskRuleDetailByRuleId(ruleId);
         if(maskrule != null) {
             return Result.ok(maskrule);
@@ -47,7 +47,7 @@ public class MaskRuleController {
     }
 
     @GetMapping("deleteRule")
-    public Result deleteTask(@RequestParam String userId,@RequestParam  Integer ruleId) {
+    public Result deleteTask(@RequestParam String userId,@RequestParam  String ruleId) {
         if(maskRuleService.deleteMaskRule(userId,ruleId) == 1) {
             return Result.ok("删除成功");
         }else return Result.build(500,"删除失败");

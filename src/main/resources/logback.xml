@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
 
-    <property name="pattern" value=" %d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%thread] %c %M %L  %m%n"></property>
+    <property name="pattern" value=" %d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%thread] %logger{35} - %msg%n"></property>
 
 <!--    <property name="logDir" value="./logs/"></property>-->
 
@@ -17,7 +17,7 @@
                 <file>./logbacktest/${taskId}.log</file>
                 <append>true</append>
                 <encoder charset="UTF-8">
-                    <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] %-5level %logger{35} - %msg%n</pattern>
+                    <pattern>${pattern}</pattern>
                 </encoder>
             </appender>
         </sift>

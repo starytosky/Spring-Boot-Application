@@ -16,13 +16,13 @@ public class LocalMaskSql {
                 if(checkMaskTask.getUserId() != null){
                     WHERE("localmask.user_id = userinfo.user_id");
                     WHERE("localmask.user_id = #{userId}");
-                    WHERE("isdelete = 0");
+                    WHERE("localmask.isdelete = 0");
                 }
                 if(checkMaskTask.getTaskName() != null && checkMaskTask.getTaskName().length()>0){
-                    WHERE("task_name = #{taskName}");
+                    WHERE("localmask.task_name = #{taskName}");
                 }
                 if(checkMaskTask.getTaskStatus() != null){
-                    WHERE("task_status = #{taskStatus}");
+                    WHERE("localmask.task_status = #{taskStatus}");
                 }
                 if(checkMaskTask.getTotalRecord() != null){
                     String str = checkMaskTask.getTotalRecord().toString() + ","+ checkMaskTask.getRecordNumber().toString();

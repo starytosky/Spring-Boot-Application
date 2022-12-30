@@ -12,11 +12,12 @@ import java.util.Date;
 @TableName("masktask")
 public class MaskTask {
   @TableId(value = "task_id",type = IdType.AUTO)
-  private Integer taskId;
+  private String taskId;
   private String userId;
-  private Integer ruleId;
+  private String ruleId;
   private Integer methodId;
   private String taskName;
+  private String userName;
   private Integer taskStatus;
   private Integer isType;
   private String taskDesc;

@@ -6,9 +6,9 @@ import java.util.Date;
 
 @Data
 public class ExecRecordInfo {
-    private Integer execId;
-    private Integer taskId;
-    private Integer ruleId;
+    private String execId;
+    private String taskId;
+    private String ruleId;
     private String ruleName;
     private String ruleDesc;
     private String limitContent;

@@ -11,10 +11,10 @@ import java.util.Date;
 @TableName("localmask")
 public class LocalMask {
     @TableId(value = "exec_id",type = IdType.AUTO)
-    private Integer execId;
-    private Integer taskId;
+    private String execId;
+    private String taskId;
     private String userId;
-    private Integer ruleId;
+    private String ruleId;
     private Integer methodId;
     private String userName; // 用户名
     private String taskName;

@@ -17,7 +17,7 @@ import java.util.List;
 public interface LocalMaskDao {
 
     //添加
-    @Insert("insert into localmask(user_id,task_id,rule_id,task_name,data_name,origin_path,mask_path,model,start_time,end_time,method,task_status,is_type,isdelete) values(#{userId},#{taskId},#{ruleId},#{taskName},#{dataName},#{originPath},#{maskPath},#{model},#{startTime},#{endTime},#{method},#{taskStatus},#{isType},#{isdelete})")
+    @Insert("insert into localmask(exec_id,user_id,task_id,rule_id,task_name,data_name,origin_path,mask_path,model,start_time,end_time,method,task_status,is_type,isdelete) values(#{#{execId},userId},#{taskId},#{ruleId},#{taskName},#{dataName},#{originPath},#{maskPath},#{model},#{startTime},#{endTime},#{method},#{taskStatus},#{isType},#{isdelete})")
     @Options(useGeneratedKeys=true, keyProperty="execId")
     int insert(LocalMask localvideoMask);
 
@@ -35,19 +35,19 @@ public interface LocalMaskDao {
     int LocalDataCount(CheckLocalData checkLocalData);
 
     @Update("update localmask set isdelete = 1 where user_id = #{userId} and task_id = #{taskId}")
-    int deleteTask(Integer userId,Integer taskId);
+    int deleteTask(String userId,String taskId);
 
     @Select("select count(*) from localmask where user_id = #{userId} and isdelete=0")
     int getRecordCountByUserId(int user_id);
 
     @Select("select count(*) from localmask where task_id = #{taskId}")
-    int getRecordCountByTaskId(int taskId);
+    int getRecordCountByTaskId(String taskId);
 
     @Select("select resource_name from resources where resource_id = #{resourceId}")
     String getResourceNameByResourceId(String resourceId);
 
-    @Select("select * from localmask,masktask where localmask.task_id = #{taskId} and localmask.task_id = masktask.task_id and user_id = #{userId} and isdelete=0")
-    List<LocalMask> getExecRecordList(String userId,Integer taskId);
+    @Select("select * from localmask,masktask where localmask.task_id = #{taskId} and localmask.task_id = masktask.task_id and localmask.user_id = #{userId} and localmask.isdelete=0")
+    List<LocalMask> getExecRecordList(String userId,String taskId);
 
     @Select("SELECT\n" +
             "\tlocalmask.task_id,\n" +
@@ -79,5 +79,5 @@ public interface LocalMaskDao {
             "\tINNER JOIN maskmethod ON masktask.method_id = maskmethod.mask_method_id \n" +
             "WHERE\n" +
             "\tlocalmask.exec_id = #{execId}")
-    ExecRecordInfo getExecRecordInfo(Integer execId);
+    ExecRecordInfo getExecRecordInfo(String execId);
 }

@@ -3,6 +3,7 @@ package com.liang.service.impl;
 import com.liang.Mapper.*;
 import com.liang.Rep.*;
 import com.liang.Res.MaskDataInfo;
+import com.liang.Res.MaskDataList;
 import com.liang.service.MaskDataService;
 import com.liang.service.MaskRuleService;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ public class MaskDataServiceImpl implements MaskDataService {
 	}
 
 	@Override
-	public List<MaskData> selectMaskData(CheckMaskData checkMaskData) {
+	public List<MaskDataList> selectMaskData(CheckMaskData checkMaskData) {
 		return maskDataDao.selectMaskData(checkMaskData);
 	}
 
