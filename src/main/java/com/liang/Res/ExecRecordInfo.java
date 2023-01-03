@@ -14,8 +14,10 @@ public class ExecRecordInfo {
     private String limitContent;
     private String limitForm;
     private String taskName;
+    private String taskDesc;
     private String dataId;
     private String dataName;
+    private String streamUrl;
     private String resourceInfo;
     private Integer dataType;
     private String resourceDesc;

@@ -1,6 +1,7 @@
 package com.liang.Rep;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
@@ -11,7 +12,8 @@ import java.util.Date;
 @Data
 @TableName("masktask")
 public class MaskTask {
-  @TableId(value = "task_id",type = IdType.AUTO)
+//  @TableId(value = "task_id",type = IdType.AUTO)
+  @TableField("task_id")
   private String taskId;
   private String userId;
   private String ruleId;

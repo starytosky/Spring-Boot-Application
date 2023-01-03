@@ -3,13 +3,15 @@ package com.liang.Rep;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 @Data
 @TableName("maskdata")
 public class MaskData {
-  @TableId(value = "mask_data_id",type = IdType.AUTO)
+//  @TableId(value = "mask_data_id",type = IdType.AUTO)
+  @TableField("mask_data_id")
   private String maskDataId;
   private String userId;
   private String taskId;

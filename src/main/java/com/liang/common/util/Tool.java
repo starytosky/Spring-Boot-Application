@@ -1,8 +1,12 @@
 package com.liang.common.util;
 
+import com.alibaba.druid.util.StringUtils;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 
 public class Tool {
 
@@ -33,5 +37,30 @@ public class Tool {
 				}
 		}
 		return stringBuffer.toString();
+	}
+
+	public static String getNowIP() throws IOException {
+		String ip = null;
+		String objWebURL = "https://bajiu.cn/ip/";
+		BufferedReader br = null;
+		try {
+			URL url = new URL(objWebURL);
+			br = new BufferedReader(new InputStreamReader(url.openStream()));
+			String s = "";
+			String webContent = "";
+			while ((s = br.readLine()) != null) {
+				if (s.indexOf("互联网IP") != -1) {
+					ip = s.substring(s.indexOf("'") + 1, s.lastIndexOf("'"));
+					break;
+				}
+			}
+		} finally {
+			if (br != null)
+				br.close();
+		}
+		if (StringUtils.isEmpty(ip)) {
+			throw new RuntimeException();
+		}
+		return ip;
 	}
 }

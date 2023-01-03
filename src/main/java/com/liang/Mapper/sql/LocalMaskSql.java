@@ -1,5 +1,6 @@
 package com.liang.Mapper.sql;
 
+import com.liang.Rep.CheckExecTask;
 import com.liang.Rep.CheckLocalData;
 import com.liang.Rep.CheckMaskTask;
 import lombok.extern.slf4j.Slf4j;
@@ -63,6 +64,56 @@ public class LocalMaskSql {
                 }
                 if(checkLocalData.getResourceType() != null && checkLocalData.getResourceType().length()>0){
                     WHERE("resource_type = #{resourceType}");
+                }
+            }
+        }.toString();
+    }
+
+    public String getExecRecordList(CheckExecTask checkExecTask){
+        return new SQL(){
+            {
+                SELECT("*");
+                FROM("localmask","masktask");
+                if(checkExecTask.getTaskId()!=null){
+                    WHERE("localmask.task_id = #{taskId}");
+                    WHERE("localmask.task_id = masktask.task_id");
+                }
+                if(checkExecTask.getExecId()!=null){
+                    WHERE("localmask.exec_id = #{execId}");
+                }
+                if(checkExecTask.getUserId()!=null){
+                    WHERE("localmask.user_id = #{userId}");
+                    WHERE("localmask.isdelete = 0");
+                }
+                if(checkExecTask.getTaskStatus()!=null){
+                    WHERE("localmask.task_status = #{taskStatus}");
+                }
+//                if(checkExecTask.getTotalRecord() != null){
+//                    String str = checkExecTask.getTotalRecord().toString() + ","+ checkExecTask.getRecordNumber().toString();
+//                    LIMIT(str);
+//                }
+            }
+        }.toString();
+    }
+
+    // 暂时不用
+    public String getExecRecordListCount(CheckExecTask checkExecTask){
+        return new SQL(){
+            {
+                SELECT("count(*)");
+                FROM("localmask","masktask");
+                if(checkExecTask.getTaskId()!=null){
+                    WHERE("localmask.task_id = #{taskId}");
+                }
+                if(checkExecTask.getExecId()!=null){
+                    WHERE("localmask.exec_id = #{execId}");
+                }
+                if(checkExecTask.getUserId()!=null){
+                    WHERE("localmask.user_id = #{userId}");
+                    WHERE("localmask.isdelete = 0");
+                }
+                if(checkExecTask.getTaskStatus()!=null){
+                    WHERE("localmask.task_status = #{taskStatus}");
                 }
             }
         }.toString();

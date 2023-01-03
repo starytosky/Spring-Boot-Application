@@ -30,7 +30,7 @@ class OutStream extends Thread{
             String line = null;
             while ((line = br.readLine()) != null) {
                 if (type.equals("Error")) {
-                   LOG.info(line, taskId, Thread.currentThread());
+//                   LOG.info(line, taskId, Thread.currentThread());
                 } else {
                     LOG.info(line, taskId, Thread.currentThread());
                 }

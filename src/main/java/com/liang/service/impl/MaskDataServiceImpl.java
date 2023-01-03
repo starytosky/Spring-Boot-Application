@@ -4,12 +4,15 @@ import com.liang.Mapper.*;
 import com.liang.Rep.*;
 import com.liang.Res.MaskDataInfo;
 import com.liang.Res.MaskDataList;
+import com.liang.Res.Resources;
+import com.liang.common.util.Tool;
 import com.liang.service.MaskDataService;
 import com.liang.service.MaskRuleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 @Service
 @Slf4j
@@ -38,7 +41,7 @@ public class MaskDataServiceImpl implements MaskDataService {
 
 
 	@Override
-	public int deleteMaskData(String userId, Integer maskDataId) {
+	public int deleteMaskData(String userId, String maskDataId) {
 		return maskDataDao.deleteMaskData(userId,maskDataId);
 	}
 
@@ -53,12 +56,19 @@ public class MaskDataServiceImpl implements MaskDataService {
 	}
 
 	@Override
-	public MaskDataInfo getMaskDataInfo(Integer maskDataId) {
+	public MaskDataInfo getMaskDataInfo(String maskDataId) {
 		MaskDataInfo maskDataInfo = maskDataDao.getMaskDataInfo(maskDataId);
 		if(maskDataInfo.getIsupload() == 1) {
 			maskDataInfo.setRuleDesc(maskRuleService.getRuleContent(maskDataInfo.getRulePath()));
 		}
 		return maskDataInfo;
+	}
+
+	@Override
+	public Resources getResourcesInfo(String resourceId) throws IOException {
+		Resources resources = maskDataDao.getResourcesInfo(resourceId);
+		resources.setResourcePath(Tool.getNowIP()+resources.getResourcePath());
+		return resources;
 	}
 
 

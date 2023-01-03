@@ -1,5 +1,6 @@
 package com.liang.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.liang.Mapper.*;
 import com.liang.Rep.LiveVideoMask;
 import com.liang.Rep.LocalMask;
@@ -59,24 +60,24 @@ public class ExecServiceImpl implements IExecService {
     public void localVideoMask(String[] cmdStr, LocalMask localvideoMask) {
         // 操作三个表，本身的执行记录表（更新执行状态）、任务表（更新最新任务执行状态）、脱敏数据表（新增脱敏记录）
         try {
-            String logName = "local_" + String.valueOf(localvideoMask.getExecId());
+            String logName = "local_" + localvideoMask.getExecId();
             boolean isexeclocal = ExecUtil.exec(cmdStr, 100, logName);
             Date endTime = new Date();
             localvideoMask.setEndTime(endTime);
-            // 更新日志地址
-            localvideoMask.setLogPath(maskLogPath + logName+".log");
-            localMaskMapper.updateById(localvideoMask);
+            QueryWrapper<LocalMask> wrapper = new QueryWrapper<>();
+            wrapper.eq("exec_id",localvideoMask.getExecId());
             if (!isexeclocal){
                 // 向数据库写入信息
                 log.info("执行任务"+ localvideoMask.getExecId() +"脚本执行出错");
                 localvideoMask.setTaskStatus(2);
+                localMaskMapper.update(localvideoMask,wrapper);
                 updateTaskStatus(0,localvideoMask.getTaskId(), localvideoMask.getExecId(),2);
                 log.info("任务"+localvideoMask.getTaskId()+"状态更新完成");
             }else {
                 log.info("任务"+ localvideoMask.getExecId() +"执行成功");
                 // 设置执行记录状态
                 localvideoMask.setTaskStatus(1);
-                localMaskMapper.updateById(localvideoMask);
+                localMaskMapper.update(localvideoMask,wrapper);
                 // 设置任务集合状态
                 updateTaskStatus(0,localvideoMask.getTaskId(), localvideoMask.getExecId(),1);
                 // 向脱敏数据表新增一条记录
@@ -93,10 +94,9 @@ public class ExecServiceImpl implements IExecService {
     public void liveVideoMask(String[] cmdStr, LiveVideoMask liveVideoMask) {
             // 这边执行异步上传文件操作
             try {
-                String logName = "live_"+String.valueOf(liveVideoMask.getExecId());
+                String logName = "live_"+ liveVideoMask.getExecId();
                 boolean isexeclive = ExecUtil.exec(cmdStr, 100, logName);
                 // 更新日志地址
-                liveVideoMask.setLogPath(maskLogPath + logName+".log");
                 liveVideoMaskDao.updateLiveVieoMaskById(liveVideoMask);
                 if (!isexeclive) {
                     setLiveTaskStatus(2,liveVideoMask);
@@ -192,7 +192,7 @@ public class ExecServiceImpl implements IExecService {
 
         public void localSetMaskData(LocalMask localvideoMask) {
             MaskData maskData = new MaskData();
-            maskData.setMaskDataId(IdRandomUtils.getRandomID().toString());
+            maskData.setMaskDataId("ma"+IdRandomUtils.getRandomID());
             maskData.setExecId(localvideoMask.getExecId());
             maskData.setTaskId(localvideoMask.getTaskId());
             maskData.setUserId(localvideoMask.getUserId());
@@ -210,7 +210,7 @@ public class ExecServiceImpl implements IExecService {
 
         public void liveSetMaskData(LiveVideoMask liveVideoMask ) {
             MaskData maskData = new MaskData();
-            maskData.setMaskDataId(IdRandomUtils.getRandomID().toString());
+            maskData.setMaskDataId("ma"+IdRandomUtils.getRandomID());
             maskData.setExecId(liveVideoMask.getExecId());
             maskData.setTaskId(liveVideoMask.getTaskId());
             maskData.setUserId(liveVideoMask.getUserId());
@@ -227,13 +227,13 @@ public class ExecServiceImpl implements IExecService {
         }
 
     public void updateTaskStatus(Integer isType,String taskId, String execId,Integer status) {
-//        if(isType==0) {
-//            if (execId == localMaskDao.getRecordCountByTaskId(taskId))
-//                maskTaskDao.updateTaskStatus(taskId, status);
-//        }else {
-//            if(execId == liveVideoMaskDao.GetUserTaskCountByTaskId(taskId)){
-//                maskTaskDao.updateTaskStatus(taskId, status);
-//            }
-//        }
+        if(isType==0) {
+            if (execId.equals(localMaskDao.getRecordCountByTaskId(taskId)))
+                maskTaskDao.updateTaskStatus(taskId, status);
+        }else {
+            if(execId.equals(liveVideoMaskDao.GetUserTaskCountByTaskId(taskId))){
+                maskTaskDao.updateTaskStatus(taskId, status);
+            }
+        }
     }
 }

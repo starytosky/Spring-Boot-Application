@@ -5,6 +5,7 @@ import com.liang.Rep.CheckMaskTask;
 import com.liang.Rep.MaskData;
 import com.liang.Res.MaskDataInfo;
 import com.liang.Res.MaskDataList;
+import com.liang.Res.Resources;
 import com.liang.common.util.Result;
 import com.liang.common.util.ResultCodeEnum;
 import com.liang.service.MaskDataService;
@@ -40,14 +41,14 @@ public class MaskDataController {
 	}
 
 	@GetMapping("deleteMaskData")
-	public Result deleteTask(@RequestParam String userId, @RequestParam  Integer maskDataId) {
+	public Result deleteTask(@RequestParam String userId, @RequestParam  String maskDataId) {
 		if(maskDataService.deleteMaskData(userId,maskDataId) == 1) {
 			return Result.ok("删除成功");
 		}else return Result.build(500,"删除失败");
 	}
 
 	@GetMapping("getMaskDataInfo")
-	public Result getMaskDataInfo(@RequestParam Integer maskDataId) {
+	public Result getMaskDataInfo(@RequestParam String maskDataId) {
 		MaskDataInfo maskDataInfo = maskDataService.getMaskDataInfo(maskDataId);
 		if(maskDataInfo != null) {
 			return Result.ok(maskDataInfo);
@@ -79,5 +80,13 @@ public class MaskDataController {
 		inputStream.close();
 	}
 
+	// 获取原始静态数据详情getResourcesInfo
+	@GetMapping("getResourceInfo")
+	public Result getResourceInfo(@RequestParam String resourceId) throws IOException {
+		Resources resources = maskDataService.getResourcesInfo(resourceId);
+		if(resources != null) {
+			return Result.ok(resources);
+		}else return Result.build(500,"查询失败");
+	}
 
 }

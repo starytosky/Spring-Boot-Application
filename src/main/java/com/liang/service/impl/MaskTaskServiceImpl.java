@@ -1,5 +1,6 @@
 package com.liang.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.liang.Mapper.*;
 import com.liang.Rep.*;
 import com.liang.Res.ExecRecordInfo;
@@ -78,6 +79,9 @@ public class MaskTaskServiceImpl implements MaskTaskService {
     @Value("${InBucketName}")
     private String InBucketName;
 
+    @Value("${maskLogPath}")
+    private String maskLogPath;
+
     // 算法允许传入的参数
     private static final String[] checkmodelList = {"person","plate","sign","qrcode","idcard","nake","all"};
     // 算法在什么设备上运行
@@ -140,8 +144,12 @@ public class MaskTaskServiceImpl implements MaskTaskService {
         String[] modelList = localvideoMask.getModel().split(",");
         int cmd_len = modelList.length + std.length + 2;
         String[] cmdStr = setCmd(std,modelList,cmd_len,localvideoMask.getMethod());
+        String logName = "local_" + localvideoMask.getExecId();
+        localvideoMask.setLogPath(maskLogPath + logName+".log");
         // 更新数据
-        localMaskMapper.updateById(localvideoMask);
+        QueryWrapper<LocalMask> wrapper = new QueryWrapper<>();
+        wrapper.eq("exec_id",localvideoMask.getExecId());
+        localMaskMapper.update(localvideoMask,wrapper);
         // 更新任务状态
         maskTaskDao.updateTaskStatus(localvideoMask.getTaskId(), 0);
         // 执行异步操作
@@ -152,7 +160,7 @@ public class MaskTaskServiceImpl implements MaskTaskService {
     public LocalMask setLocalMask(MaskTask maskTask) {
         LocalMask localvideoMask = new LocalMask();
         // 根据userid local taskid execid 生成对应文件夹
-        localvideoMask.setExecId(IdRandomUtils.getRandomID().toString());
+        localvideoMask.setExecId("lo"+IdRandomUtils.getRandomID());
         localvideoMask.setModel( maskRuleService.getMaskRuleById(maskTask.getRuleId()).getLimitContent());
         localvideoMask.setTaskId(maskTask.getTaskId());
         localvideoMask.setUserId(maskTask.getUserId());
@@ -204,6 +212,8 @@ public class MaskTaskServiceImpl implements MaskTaskService {
         ObsUtil.CreateFolder(InBucketName,obsPath);
         // 向数据库插入数据
         liveVideoMask.setObsPath(obsPath);
+        String logName = "live_"+ liveVideoMask.getExecId();
+        liveVideoMask.setLogPath(maskLogPath + logName+".log");
         liveVideoMaskMapper.insert(liveVideoMask);
         log.info("数据库返回信息" + liveVideoMask.getExecId());
         // 执行异步操作
@@ -228,7 +238,7 @@ public class MaskTaskServiceImpl implements MaskTaskService {
     public LiveVideoMask setLiveMask(MaskTask maskTask) {
         LiveVideoMask liveVideoMask = new LiveVideoMask();
         // 根据userid local taskid execid 生成对应文件夹
-        liveVideoMask.setExecId(IdRandomUtils.getRandomID().toString());
+        liveVideoMask.setExecId("li"+IdRandomUtils.getRandomID().toString());
         liveVideoMask.setModel( maskRuleService.getMaskRuleById(maskTask.getRuleId()).getLimitContent());
         liveVideoMask.setTaskId(maskTask.getTaskId());
         liveVideoMask.setUserId(maskTask.getUserId());
@@ -236,6 +246,7 @@ public class MaskTaskServiceImpl implements MaskTaskService {
         liveVideoMask.setMethodId(maskTask.getMethodId());
         liveVideoMask.setTaskName(maskTask.getTaskName());
         liveVideoMask.setOutFilename(maskTask.getStreamMaskName());
+        liveVideoMask.setDataName(maskTask.getStreamMaskName());
         liveVideoMask.setStreamUrl(maskTask.getStreamUrl());
         liveVideoMask.setTaskStatus(0);
         liveVideoMask.setMethod(maskTask.getMethod());
@@ -270,13 +281,16 @@ public class MaskTaskServiceImpl implements MaskTaskService {
 
     @Override
     public int createMaskTask(MaskTask maskTask) {
+        maskTask.setTaskId("ms"+IdRandomUtils.getRandomID());
         return maskTaskMapper.insert(maskTask);
     }
 
 
     @Override
     public int updateMaskTask(MaskTask maskTask) {
-        return maskTaskMapper.updateById(maskTask) ;
+        QueryWrapper<MaskTask> wrapper = new QueryWrapper<>();
+        wrapper.eq("task_id",maskTask.getTaskId());
+        return maskTaskMapper.update(maskTask,wrapper) ;
     }
 
     @Override
@@ -325,13 +339,20 @@ public class MaskTaskServiceImpl implements MaskTaskService {
     }
 
     @Override
-    public List<LocalMask> getLocalExecRecordList(String userId, String taskId) {
-        return localMaskDao.getExecRecordList(userId,taskId);
+    public List<LocalMask> getLocalExecRecordList(CheckExecTask checkExecTask) {
+        return localMaskDao.getExecRecordList(checkExecTask);
+    }
+
+    public int getLocalExecRecordListCount(CheckExecTask checkExecTask) {
+        return localMaskDao.getExecRecordListCount(checkExecTask);
     }
 
     @Override
-    public List<LiveVideoMask> getLiveExecRecordList(String userId, String taskId) {
-        return liveVideoMaskDao.getExecRecordList(userId,taskId);
+    public List<LiveVideoMask> getLiveExecRecordList(CheckExecTask checkExecTask) {
+        return liveVideoMaskDao.getExecRecordList(checkExecTask);
+    }
+    public int getLiveExecRecordListCount(CheckExecTask checkExecTask) {
+        return liveVideoMaskDao.getExecRecordListCount(checkExecTask);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.liang.Mapper;
 
 
+import com.liang.Rep.CheckExecTask;
 import com.liang.Rep.CheckLocalData;
 import com.liang.Rep.CheckMaskTask;
 import com.liang.Rep.LocalMask;
@@ -40,14 +41,19 @@ public interface LocalMaskDao {
     @Select("select count(*) from localmask where user_id = #{userId} and isdelete=0")
     int getRecordCountByUserId(int user_id);
 
-    @Select("select count(*) from localmask where task_id = #{taskId}")
-    int getRecordCountByTaskId(String taskId);
+    @Select("select t.exec_id from localmask t RIGHT JOIN \n" +
+            "(select task_id, MAX(start_time) as \"startTime\" from localmask GROUP BY task_id) tmp \n" +
+            "on t.start_time = tmp.startTime and t.task_id=tmp.task_id WHERE t.task_id = #{taskId}")
+    String getRecordCountByTaskId(String taskId);
 
     @Select("select resource_name from resources where resource_id = #{resourceId}")
     String getResourceNameByResourceId(String resourceId);
 
-    @Select("select * from localmask,masktask where localmask.task_id = #{taskId} and localmask.task_id = masktask.task_id and localmask.user_id = #{userId} and localmask.isdelete=0")
-    List<LocalMask> getExecRecordList(String userId,String taskId);
+    @SelectProvider(type = LocalMaskSql.class, method = "getExecRecordList")
+    List<LocalMask> getExecRecordList(CheckExecTask checkExecTask);
+
+    @SelectProvider(type = LocalMaskSql.class, method = "getExecRecordListCount")
+    int getExecRecordListCount(CheckExecTask checkExecTask);
 
     @Select("SELECT\n" +
             "\tlocalmask.task_id,\n" +
@@ -66,6 +72,7 @@ public interface LocalMaskDao {
             "\tmaskrule.limit_content,\n" +
             "\tmaskrule.limit_form,\n" +
             "\tmasktask.data_type,\n" +
+            "\tmasktask.task_desc,\n" +
             "\tresources.resource_desc,\n" +
             "\tresources.resource_info,\n" +
             "\tmaskmethod.method_name,\n" +

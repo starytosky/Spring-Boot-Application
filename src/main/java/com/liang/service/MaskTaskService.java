@@ -51,9 +51,11 @@ public interface MaskTaskService {
     int getTaskRecordCount(CheckMaskTask checkMaskTask);
 
     // 获取静态执行记录列表
-    List<LocalMask> getLocalExecRecordList(String userId, String taskId);
+    List<LocalMask> getLocalExecRecordList(CheckExecTask checkExecTask);
+    int getLocalExecRecordListCount(CheckExecTask checkExecTask);
     // 获取动态执行记录
-    List<LiveVideoMask> getLiveExecRecordList(String userId, String taskId);
+    List<LiveVideoMask> getLiveExecRecordList(CheckExecTask checkExecTask);
+    int getLiveExecRecordListCount(CheckExecTask checkExecTask);
 
     ExecRecordInfo getExecRecordInfo(String userId, String execId,Integer isType);
 //

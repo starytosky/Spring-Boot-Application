@@ -1,5 +1,6 @@
 package com.liang.Controller;
 
+import com.baomidou.mybatisplus.extension.api.R;
 import com.liang.Rep.*;
 import com.liang.Res.LocalData;
 import com.liang.Res.MaskDataInfo;
@@ -113,10 +114,23 @@ public class MaskTaskController {
 
     // 获取执行记录
     @GetMapping("getExecRecord")
-    public Result getExecRecord(@RequestParam String userId,@RequestParam  String taskId,@RequestParam  Integer isType) {
-        if(isType == 0) {
-            return Result.ok(maskTaskService.getLocalExecRecordList(userId,taskId));
-        }else return Result.ok(maskTaskService.getLiveExecRecordList(userId,taskId));
+    public Result getExecRecord(CheckExecTask checkExecTask) {
+//        checkExecTask.setTotalRecord(checkExecTask.getRecordNumber()* (checkExecTask.getPageNumber()-1));
+        if(checkExecTask.getIsType() == 0) {
+            List<LocalMask> localExecList = maskTaskService.getLocalExecRecordList(checkExecTask);
+//            int localExecCount = maskTaskService.getLocalExecRecordListCount(checkExecTask);
+            if(localExecList!=null) {
+//                return Result.build(localExecList,localExecCount,ResultCodeEnum.SUCCESS);
+                return Result.build(localExecList,ResultCodeEnum.SUCCESS);
+            }else return Result.build(500,"查询失败");
+        }else {
+            List<LiveVideoMask> liveVideoMaskList = maskTaskService.getLiveExecRecordList(checkExecTask);
+//            int liveExecCount = maskTaskService.getLiveExecRecordListCount(checkExecTask);
+            if(liveVideoMaskList != null) {
+//                return Result.build(liveVideoMaskList,liveExecCount,ResultCodeEnum.SUCCESS);
+                return Result.build(liveVideoMaskList,ResultCodeEnum.SUCCESS);
+            }else return Result.build(500,"查询失败");
+        }
     }
 
     // 执行记录的详细信息
@@ -136,6 +150,7 @@ public class MaskTaskController {
             return Result.build(localDataList,localDataCount, ResultCodeEnum.SUCCESS);
         }else return Result.build(500,"查询失败");
     }
+
 
 }
 

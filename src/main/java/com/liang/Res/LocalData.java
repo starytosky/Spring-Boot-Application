@@ -10,7 +10,7 @@ public class LocalData {
 	private String resourceName;
 	private String keywords;
 	private String resourceType;
-	private String resourceTrainPath;
-	private Date create_time;
+	private String resourcePath;
+	private Date createTime;
 	private String resourceDesc;
 }

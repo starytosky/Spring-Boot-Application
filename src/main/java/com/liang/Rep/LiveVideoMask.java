@@ -1,6 +1,7 @@
 package com.liang.Rep;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -10,7 +11,8 @@ import java.util.Date;
 @Data
 @TableName("livevideomask")
 public class LiveVideoMask {
-    @TableId(value = "exec_id",type = IdType.AUTO)
+//    @TableId(value = "exec_id",type = IdType.AUTO)
+    @TableField("exec_id")
     private String execId;
     private String taskId;
     private String userId;

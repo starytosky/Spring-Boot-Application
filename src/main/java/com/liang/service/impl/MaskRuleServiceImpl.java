@@ -1,8 +1,10 @@
 package com.liang.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.liang.Mapper.MaskRuleMapper;
 import com.liang.Rep.CheckRule;
+import com.liang.Rep.MaskTask;
 import com.liang.Rep.Maskrule;
 import com.liang.Mapper.MaskRuleDao;
 import com.liang.common.util.IdRandomUtils;
@@ -13,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static org.springframework.util.StringUtils.isEmpty;
 
 @Service
 @Slf4j
@@ -28,7 +32,7 @@ public class MaskRuleServiceImpl implements MaskRuleService {
 
     @Override
     public int addMaskRule(Maskrule maskrule) {
-        maskrule.setRuleId(IdRandomUtils.getRandomID().toString());
+        maskrule.setRuleId("ru"+IdRandomUtils.getRandomID().toString());
         return maskRuleMapper.insert(maskrule);
     }
 
@@ -73,7 +77,9 @@ public class MaskRuleServiceImpl implements MaskRuleService {
 
     @Override
     public int updateMaskRule(Maskrule maskrule) {
-        return maskRuleMapper.updateById(maskrule);
+        QueryWrapper<Maskrule> wrapper = new QueryWrapper<>();
+        wrapper.eq("rule_id",maskrule.getRuleId());
+        return maskRuleMapper.update(maskrule,wrapper);
     }
 
     // 获取文件内容返回字符串

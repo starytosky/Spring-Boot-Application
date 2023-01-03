@@ -1,5 +1,7 @@
 package com.liang.Mapper;
 
+import com.liang.Mapper.sql.LocalMaskSql;
+import com.liang.Rep.CheckExecTask;
 import com.liang.Rep.CheckMaskTask;
 import com.liang.Rep.LiveVideoMask;
 import com.liang.Mapper.sql.liveVideoMaskSql;
@@ -25,8 +27,10 @@ public interface LiveVideoMaskDao {
     @Select("select count(*) from livevideomask where user_id = #{userId} and task_id = #{taskId}")
     int GetUserTaskCountByUserId(LiveVideoMask liveVideoMask);
 
-    @Select("select count(*) from livevideomask where task_id = #{taskId}")
-    int GetUserTaskCountByTaskId(String taskId);
+    @Select("select t.exec_id from livevideomask t RIGHT JOIN \n" +
+            "(select task_id, MAX(start_time) as \"startTime\" from livevideomask GROUP BY task_id) tmp \n" +
+            "on t.start_time = tmp.startTime and t.task_id=tmp.task_id WHERE t.task_id = #{taskId}")
+    String GetUserTaskCountByTaskId(String taskId);
 
 
 //    @Select("select * from livevideomask where user_id = #{userId} and task_status = #{status} LIMIT #{totalRecord},#{recordNumber}")
@@ -39,8 +43,11 @@ public interface LiveVideoMaskDao {
     @Select("select count(*) from livevideomask where user_id = #{userId} and isdelete=0")
     int getRecordCountByUserId(String user_id);
 
-    @Select("select * from livevideomask,masktask where livevideomask.task_id = #{taskId} and livevideomask.task_id = masktask.task_id and livevideomask.user_id = #{userId} and livevideomask.isdelete=0")
-    List<LiveVideoMask> getExecRecordList(String userId, String taskId);
+    @SelectProvider(type = liveVideoMaskSql.class, method = "getExecRecordList")
+    List<LiveVideoMask> getExecRecordList(CheckExecTask checkExecTask);
+
+    @SelectProvider(type = liveVideoMaskSql.class, method = "getExecRecordListCount")
+    int getExecRecordListCount(CheckExecTask checkExecTask);
 
     @Select("SELECT\n" +
             "\tlivevideomask.exec_id,\n" +
@@ -48,6 +55,7 @@ public interface LiveVideoMaskDao {
             "\tlivevideomask.task_name,\n" +
             "\tlivevideomask.stream_url,\n" +
             "\tlivevideomask.out_filename,\n" +
+            "\tlivevideomask.stream_url,\n" +
             "\tmasktask.method,\n" +
             "\tlivevideomask.start_time,\n" +
             "\tlivevideomask.end_time,\n" +
@@ -62,6 +70,7 @@ public interface LiveVideoMaskDao {
             "\tmaskrule.isupload, \n" +
             "\tmaskrule.rule_path,\n" +
             "\tlivevideomask.task_status,\n" +
+            "\tmasktask.task_desc,\n" +
             "\tmasktask.data_type\n" +
             "FROM\n" +
             "\tlivevideomask\n" +
