@@ -25,6 +25,9 @@ public interface MaskTaskDao {
     @Update("update masktask set task_status=#{status} where task_id = #{taskId}")
     int updateTaskStatus(String taskId,Integer status);
 
+    @Update("update masktask set isdelete=1 where task_id = #{taskId}")
+    int deleteTask(String taskID);
+
     @SelectProvider(type = MaskTaskSql.class, method = "selectByTaskRecord")
     List<MaskTask> getTaskRecord(CheckMaskTask checkMaskTask);
 

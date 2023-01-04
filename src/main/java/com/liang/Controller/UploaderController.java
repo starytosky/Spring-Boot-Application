@@ -21,7 +21,7 @@ import java.io.IOException;
  */
 @RestController
 @CrossOrigin
-@RequestMapping("/upload")
+@RequestMapping("/maskService/upload")
 public class UploaderController {
 
     @Autowired

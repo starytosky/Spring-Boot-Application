@@ -26,4 +26,5 @@ public class Maskrule {
   private String ruleResource;
   private Date time;
   private Integer isdelete;
+  private Integer ischose;
 }

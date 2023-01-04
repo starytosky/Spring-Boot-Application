@@ -3,6 +3,7 @@ package com.liang.service;
 
 import com.liang.Rep.CheckRule;
 import com.liang.Rep.Maskrule;
+import com.liang.Rep.MaskRuleChose;
 
 import java.util.List;
 
@@ -26,4 +27,6 @@ public interface MaskRuleService {
     Maskrule getMaskRuleDetailByRuleId(String ruleId);
 
     int updateMaskRule(Maskrule maskrule);
+
+    int updateRuleChoseById(List<MaskRuleChose> maskRuleChoseList);
 }

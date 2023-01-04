@@ -25,7 +25,7 @@ import java.util.List;
 //@Controller
 // @RestController 包含了上面两个注解的功能
 @RestController
-@RequestMapping("/dataMask/")
+@RequestMapping("/maskService/dataMask/")
 @Slf4j
 public class MaskTaskController {
 
@@ -52,6 +52,17 @@ public class MaskTaskController {
             return Result.ok("更新成功");
         }else {
             return Result.build(500,"更新失败");
+        }
+    }
+
+    // 删除任务
+    @GetMapping("deleteTask")
+    public Result deleteTask(@RequestParam("taskId") String taskId) {
+        int x = maskTaskService.deleteTask(taskId);
+        if(x>0) {
+            return Result.ok("删除成功");
+        }else {
+            return Result.build(500,"删除失败");
         }
     }
 
@@ -150,6 +161,8 @@ public class MaskTaskController {
             return Result.build(localDataList,localDataCount, ResultCodeEnum.SUCCESS);
         }else return Result.build(500,"查询失败");
     }
+
+
 
 
 }

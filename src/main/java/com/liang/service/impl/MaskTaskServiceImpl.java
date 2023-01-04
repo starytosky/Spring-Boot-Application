@@ -369,6 +369,11 @@ public class MaskTaskServiceImpl implements MaskTaskService {
         return execRecordInfo;
     }
 
+    @Override
+    public int deleteTask(String taskID) {
+        return maskTaskDao.deleteTask(taskID);
+    }
+
 
 //    @Override
 //    public boolean liveVideoMask(String stream_url, Long times_sec, String out_file_path, String file_format, boolean is_audio) {

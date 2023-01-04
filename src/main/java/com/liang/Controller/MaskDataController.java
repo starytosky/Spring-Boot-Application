@@ -23,7 +23,7 @@ import java.net.URLEncoder;
 import java.util.List;
 
 @RestController
-@RequestMapping("/maskData/")
+@RequestMapping("/maskService/maskData/")
 @Slf4j
 public class MaskDataController {
 

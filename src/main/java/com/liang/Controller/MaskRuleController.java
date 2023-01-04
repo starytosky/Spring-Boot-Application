@@ -1,7 +1,9 @@
 package com.liang.Controller;
 
 import com.liang.Rep.CheckRule;
+import com.liang.Rep.MaskRuleChoseList;
 import com.liang.Rep.Maskrule;
+import com.liang.Rep.MaskRuleChose;
 import com.liang.common.util.Result;
 import com.liang.common.util.ResultCodeEnum;
 import com.liang.service.MaskRuleService;
@@ -11,9 +13,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 @RestController
-@RequestMapping("/maskRule/")
+@RequestMapping("/maskService/maskRule/")
 @Slf4j
 public class MaskRuleController {
 
@@ -73,5 +76,10 @@ public class MaskRuleController {
         return Result.ok(maskRuleService.getRuleContent(rulePath));
     }
 
-
+    @PostMapping("updateRuleChose")
+    public Result updateRuleChoseById(@RequestBody MaskRuleChoseList maskRuleChoseList) {
+        if(maskRuleService.updateRuleChoseById(maskRuleChoseList.getMaskRuleChoseList()) == 1) {
+            return Result.ok("更新成功");
+        }else return Result.build(500,"更新失败");
+    }
 }

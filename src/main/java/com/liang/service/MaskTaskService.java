@@ -58,6 +58,9 @@ public interface MaskTaskService {
     int getLiveExecRecordListCount(CheckExecTask checkExecTask);
 
     ExecRecordInfo getExecRecordInfo(String userId, String execId,Integer isType);
+
+    // 删除任务
+    int deleteTask(String taskID);
 //
 //    // readVideoFrame
 //    boolean readVideoFrame();

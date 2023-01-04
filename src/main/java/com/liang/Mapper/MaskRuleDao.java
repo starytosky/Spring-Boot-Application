@@ -4,6 +4,7 @@ package com.liang.Mapper;
 import com.liang.Rep.CheckRule;
 import com.liang.Rep.Maskrule;
 import com.liang.Mapper.sql.MaskRuleSql;
+import com.liang.Rep.MaskRuleChose;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -32,6 +33,15 @@ public interface MaskRuleDao {
 //    删除
     @Update("update maskrule set isdelete = 1 where user_id = #{userId} and rule_id = #{ruleId}")
     int deleteRule(String userId,String ruleId);
+
+
+    // 判断ruleId 是否存在
+    @Select("select count(*) from maskrule where rule_id = #{ruleId} and isdelete=0")
+    int selectRuleById(String ruleId);
+
+    // 更新脱敏规则状态
+    @Update("update maskrule set ischose = #{isChose} where rule_id = #{ruleId}")
+    int updateRuleChoseById(MaskRuleChose maskRuleChose);
 
     @Select("select count(*) from maskrule where user_id = #{userId} and isdelete=0")
     int getRecordCountByUserId(String user_id);

@@ -18,6 +18,9 @@ public class MaskRuleSql {
                 if(checkRule.getRuleName() != null && checkRule.getRuleName().length()>0){
                     WHERE("maskrule.rule_name = #{ruleName}");
                 }
+                if(checkRule.getIsMask()!=null && checkRule.getIsMask() == 1) {
+                    WHERE("maskrule.ischose = 1");
+                }
                 if(checkRule.getDataType() != null){
                     WHERE("maskrule.data_type = #{dataType}");
                 }
@@ -38,6 +41,9 @@ public class MaskRuleSql {
                     WHERE("maskrule.user_id = userinfo.user_id");
                     WHERE("maskrule.user_id = #{userId}");
                     WHERE("maskrule.isdelete = 0");
+                }
+                if(checkRule.getIsMask()!=null && checkRule.getIsMask() == 1) {
+                    WHERE("maskrule.ischose = 1");
                 }
                 if(checkRule.getRuleName() != null && checkRule.getRuleName().length()>0){
                     WHERE("maskrule.rule_name = #{ruleName}");

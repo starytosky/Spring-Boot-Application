@@ -14,7 +14,7 @@ spring:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
 #      url: jdbc:mysql://localhost:3306/idata?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
-      url: jdbc:mysql://10.10.10.81:13306/linkempc?characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8
+      url: jdbc:mysql://10.10.10.81:13306/linkempc?characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
 #      url: jdbc:mysql://10.10.10.72:3306/idata?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
       #    url: jdbc:mysql://172.25.90.102:3306/idata?characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
       username: "root"
@@ -26,9 +26,9 @@ spring:
       initial-size: 1
       max-wait: 60000
       min-idle: 1
-      time-between-eviction-runs-millis: 60000
+      time-between-eviction-runs-millis: 10000
       min-evictable-idle-time-millis: 300000
-      validation-query: select 'x'
+      validation-query: SELECT 1
       test-while-idle: true
       test-on-borrow: false
       test-on-return: false
