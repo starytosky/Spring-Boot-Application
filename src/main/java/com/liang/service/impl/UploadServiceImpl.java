@@ -5,6 +5,7 @@ import com.liang.Rep.FileChunkDTO;
 import com.liang.Rep.FileChunkResultDTO;
 import com.liang.Rep.FileUpload;
 import com.liang.service.IUploadService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ import java.util.*;
  * @createTime 2022/4/13 0013 15:59
  */
 @Service
+@Slf4j
 @SuppressWarnings("all")
 public class UploadServiceImpl implements IUploadService {
 
@@ -71,7 +73,7 @@ public class UploadServiceImpl implements IUploadService {
         try {
             fileOutputStream = new FileOutputStream(file);
             org.apache.commons.io.IOUtils.copy(fileUpload.getFile().getInputStream(),fileOutputStream);
-            System.out.println("===========file upload success=======");
+            log.info("===========file upload success=======");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

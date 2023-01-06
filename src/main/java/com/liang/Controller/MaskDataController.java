@@ -8,6 +8,7 @@ import com.liang.Res.MaskDataList;
 import com.liang.Res.Resources;
 import com.liang.common.util.Result;
 import com.liang.common.util.ResultCodeEnum;
+import com.liang.common.util.Tool;
 import com.liang.service.MaskDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,20 +65,10 @@ public class MaskDataController {
 	 */
 	@PostMapping("downloadLocal")
 	public void downloadLocal(String path, HttpServletResponse response) throws IOException {
-		// 读到流中
-		InputStream inputStream = new FileInputStream(path);// 文件的存放路径
-		response.reset();
-		response.setContentType("application/octet-stream");
-		String filename = new File(path).getName();
-		response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(filename, "UTF-8"));
-		ServletOutputStream outputStream = response.getOutputStream();
-		byte[] b = new byte[1024];
-		int len;
-		//从输入流中读取一定数量的字节，并将其存储在缓冲区字节数组中，读到末尾返回-1
-		while ((len = inputStream.read(b)) > 0) {
-			outputStream.write(b, 0, len);
+		log.info(path);
+		if(path!=null) {
+			Tool.downloadFile(path,response);
 		}
-		inputStream.close();
 	}
 
 	// 获取原始静态数据详情getResourcesInfo

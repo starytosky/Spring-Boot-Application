@@ -84,8 +84,6 @@ public class MaskTaskServiceImpl implements MaskTaskService {
 
     // 算法允许传入的参数
     private static final String[] checkmodelList = {"person","plate","sign","qrcode","idcard","nake","all"};
-    // 算法在什么设备上运行
-    private static final String[] checkuseMethod = {"gpu","cpu"};
 
 
     @Override
@@ -99,7 +97,9 @@ public class MaskTaskServiceImpl implements MaskTaskService {
     }
 
     @Override
-    public Boolean checkParameters(String[] modelList, String useMethod) {
+    public Boolean checkParameters(MaskTask maskTask) {
+        String limitcontent = maskRuleService.getMaskRuleById(maskTask.getRuleId()).getLimitContent();
+        String[] modelList = limitcontent.split(",");
         HashSet<String> hset= new HashSet<>();
         // hset stores all the values of checkmodelList
         for(int i = 0; i < checkmodelList.length; i++)
@@ -112,7 +112,7 @@ public class MaskTaskServiceImpl implements MaskTaskService {
             if(!hset.contains(modelList[i]))
                 return false;
         }
-        if (useMethod.equals("cpu") || useMethod.equals("0")) {
+        if (maskTask.getMethod().equals("cpu") || maskTask.getMethod().equals("gpu")) {
             return true;
         }else {
             return false;

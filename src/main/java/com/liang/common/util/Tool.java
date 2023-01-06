@@ -2,11 +2,11 @@ package com.liang.common.util;
 
 import com.alibaba.druid.util.StringUtils;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.net.URL;
+import java.net.URLEncoder;
 
 public class Tool {
 
@@ -38,6 +38,25 @@ public class Tool {
 		}
 		return stringBuffer.toString();
 	}
+
+	public static void downloadFile(String path, HttpServletResponse response) throws IOException {
+		// 读到流中
+		InputStream inputStream = new FileInputStream(path);// 文件的存放路径
+		response.reset();
+		response.setContentType("application/octet-stream");
+		String filename = new File(path).getName();
+		response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(filename, "UTF-8"));
+		ServletOutputStream outputStream = response.getOutputStream();
+		byte[] b = new byte[1024];
+		int len;
+		//从输入流中读取一定数量的字节，并将其存储在缓冲区字节数组中，读到末尾返回-1
+		while ((len = inputStream.read(b)) > 0) {
+			outputStream.write(b, 0, len);
+		}
+		inputStream.close();
+	}
+
+
 
 	public static String getNowIP() throws IOException {
 		String ip = null;

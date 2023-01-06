@@ -94,11 +94,15 @@ public class MaskTaskController {
                 if (!isFile) {
                     return Result.build(500, "离线文件不存在");
                 } else {
-                    if (maskTaskService.localVideoMask(maskTask,ruleDesc)) {
-                        return Result.ok("正在脱敏..");
-                    } else {
-                        return Result.build(500, "数据脱敏失败");
-                    }
+                    // 判断限制内容是否符合格式
+                    if(maskTaskService.checkParameters(maskTask)) {
+                        if (maskTaskService.localVideoMask(maskTask,ruleDesc)) {
+                            return Result.ok("正在脱敏..");
+                        } else {
+                            return Result.build(500, "数据脱敏失败");
+                        }
+                    }else return Result.build(500, "限制内容格式不正确");
+
                 }
             }
         } else return Result.build(500, "保存失败");
@@ -112,14 +116,16 @@ public class MaskTaskController {
             log.info("任务" + maskTask.getTaskId() + "脱敏规则不正确");
             return Result.build(500, "脱敏规则不正确");
         } else {
-            if (maskTaskService.isRtmpStream(maskTask.getStreamUrl())) {
-                boolean isLive = maskTaskService.liveVideoMask(maskTask,ruleDesc);
-                if (isLive) {
-                    return Result.ok("正在脱敏..");
-                } else return Result.build(500, "脱敏失败");
-            } else {
-                return Result.build(500, "请输入正确的脱敏地址！");
-            }
+            if(maskTaskService.checkParameters(maskTask)) {
+                if (maskTaskService.isRtmpStream(maskTask.getStreamUrl())) {
+                    boolean isLive = maskTaskService.liveVideoMask(maskTask,ruleDesc);
+                    if (isLive) {
+                        return Result.ok("正在脱敏..");
+                    } else return Result.build(500, "脱敏失败");
+                } else {
+                    return Result.build(500, "请输入正确的脱敏地址！");
+                }
+            }else return Result.build(500, "限制内容格式不正确");
         }
     }
 

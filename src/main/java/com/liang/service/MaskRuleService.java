@@ -2,6 +2,7 @@ package com.liang.service;
 
 
 import com.liang.Rep.CheckRule;
+import com.liang.Rep.MaskTask;
 import com.liang.Rep.Maskrule;
 import com.liang.Rep.MaskRuleChose;
 
@@ -11,6 +12,7 @@ public interface MaskRuleService {
 
 //    添加脱敏规则
     int addMaskRule(Maskrule maskrule);
+    Boolean checkParameters(String[] limitContent);
 
     List<Maskrule> getMaskRule(CheckRule checkRule);
 
@@ -28,5 +30,5 @@ public interface MaskRuleService {
 
     int updateMaskRule(Maskrule maskrule);
 
-    int updateRuleChoseById(List<MaskRuleChose> maskRuleChoseList);
+    int updateRuleChoseById(MaskRuleChose maskRuleChose);
 }

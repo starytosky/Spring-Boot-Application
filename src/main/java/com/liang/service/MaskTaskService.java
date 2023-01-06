@@ -15,7 +15,7 @@ public interface MaskTaskService {
     Boolean isFile(String md5Id);
 
     // 判断传入的参数是否正确
-    Boolean checkParameters(String[] modelList,String useMethod);
+    Boolean checkParameters(MaskTask maskTask);
 
     // 离线视频数据脱敏
     boolean localVideoMask(MaskTask maskTask,String ruleDesc) throws IOException;
