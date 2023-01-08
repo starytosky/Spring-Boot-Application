@@ -68,6 +68,7 @@ public interface LocalMaskDao {
             "\tlocalmask.is_type,\n" +
             "\tlocalmask.log_path,\n" +
             "\tmaskrule.rule_name,\n" +
+            "\tuserinfo.user_name,\n" +
             "\tmaskrule.rule_desc,\n" +
             "\tmaskrule.limit_content,\n" +
             "\tmaskrule.limit_form,\n" +
@@ -81,6 +82,7 @@ public interface LocalMaskDao {
             "FROM\n" +
             "\tlocalmask\n" +
             "\tINNER JOIN masktask ON localmask.task_id = masktask.task_id\n" +
+            "\tINNER JOIN userinfo ON localmask.user_id = userinfo.user_id\n" +
             "\tINNER JOIN maskrule ON localmask.rule_id = maskrule.rule_id\n" +
             "\tINNER JOIN resources ON masktask.data_id = resources.resource_id\n" +
             "\tINNER JOIN maskmethod ON masktask.method_id = maskmethod.mask_method_id \n" +

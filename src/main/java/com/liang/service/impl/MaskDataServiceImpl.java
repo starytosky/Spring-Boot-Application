@@ -4,7 +4,7 @@ import com.liang.Mapper.*;
 import com.liang.Rep.*;
 import com.liang.Res.MaskDataInfo;
 import com.liang.Res.MaskDataList;
-import com.liang.Res.Resources;
+//import com.liang.Res.Resources;
 import com.liang.common.util.Tool;
 import com.liang.service.MaskDataService;
 import com.liang.service.MaskRuleService;
@@ -64,12 +64,12 @@ public class MaskDataServiceImpl implements MaskDataService {
 		return maskDataInfo;
 	}
 
-	@Override
-	public Resources getResourcesInfo(String resourceId) throws IOException {
-		Resources resources = maskDataDao.getResourcesInfo(resourceId);
-		resources.setResourcePath(Tool.getNowIP()+resources.getResourcePath());
-		return resources;
-	}
+//	@Override
+//	public Resources getResourcesInfo(String resourceId) throws IOException {
+//		Resources resources = maskDataDao.getResourcesInfo(resourceId);
+//		resources.setResourcePath(Tool.getNowIP()+resources.getResourcePath());
+//		return resources;
+//	}
 
 
 }

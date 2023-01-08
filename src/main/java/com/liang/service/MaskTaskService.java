@@ -61,6 +61,9 @@ public interface MaskTaskService {
 
     // 删除任务
     int deleteTask(String taskID);
+
+    // 获取系统资源使用率如果超过了界限就不给再执行了
+    boolean isExecTask();
 //
 //    // readVideoFrame
 //    boolean readVideoFrame();

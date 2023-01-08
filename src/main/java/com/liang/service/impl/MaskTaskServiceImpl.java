@@ -7,6 +7,7 @@ import com.liang.Res.ExecRecordInfo;
 import com.liang.Res.LocalData;
 import com.liang.common.util.IdRandomUtils;
 import com.liang.common.util.ObsUtil;
+import com.liang.common.util.Tool;
 import com.liang.service.MaskTaskService;
 import com.liang.service.IExecService;
 import com.liang.service.MaskRuleService;
@@ -27,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author liang
@@ -112,7 +114,7 @@ public class MaskTaskServiceImpl implements MaskTaskService {
             if(!hset.contains(modelList[i]))
                 return false;
         }
-        if (maskTask.getMethod().equals("cpu") || maskTask.getMethod().equals("gpu")) {
+        if (maskTask.getMethod().toLowerCase().equals("cpu") || maskTask.getMethod().toLowerCase().equals("gpu")) {
             return true;
         }else {
             return false;
@@ -170,7 +172,7 @@ public class MaskTaskServiceImpl implements MaskTaskService {
         localvideoMask.setOriginPath(maskTask.getDataPath());
         localvideoMask.setDataName(localMaskDao.getResourceNameByResourceId(maskTask.getDataId()));
         localvideoMask.setIsType(0);
-        localvideoMask.setMethod(maskTask.getMethod());
+        localvideoMask.setMethod(maskTask.getMethod().toLowerCase());
         Date timer = new Date();
         log.info("任务执行开启时间" + timer);
         localvideoMask.setStartTime(timer);
@@ -249,7 +251,7 @@ public class MaskTaskServiceImpl implements MaskTaskService {
         liveVideoMask.setDataName(maskTask.getStreamMaskName());
         liveVideoMask.setStreamUrl(maskTask.getStreamUrl());
         liveVideoMask.setTaskStatus(0);
-        liveVideoMask.setMethod(maskTask.getMethod());
+        liveVideoMask.setMethod(maskTask.getMethod().toLowerCase());
         Date timer = new Date();
         log.info("任务执行开启时间" + timer);
         liveVideoMask.setStartTime(timer);
@@ -372,6 +374,15 @@ public class MaskTaskServiceImpl implements MaskTaskService {
     @Override
     public int deleteTask(String taskID) {
         return maskTaskDao.deleteTask(taskID);
+    }
+
+    @Override
+    public boolean isExecTask() {
+        float x= Tool.SystemUsage();
+        if( x > 0.7 ) {
+            return false;
+        }
+        return true;
     }
 
 

@@ -15,6 +15,7 @@ public class ExecRecordInfo {
     private String limitForm;
     private String taskName;
     private String taskDesc;
+    private String userName;
     private String dataId;
     private String dataName;
     private String streamUrl;

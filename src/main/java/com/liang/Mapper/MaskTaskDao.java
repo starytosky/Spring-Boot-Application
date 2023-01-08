@@ -13,11 +13,6 @@ import java.util.List;
 @Mapper
 @Repository
 public interface MaskTaskDao {
-    @Insert("insert into masktask(task_id,user_id,rule_id,method_id,task_name,task_status,is_type,task_desc,data_id,data_path,data_type,stream_url,method,time) values(#{taskId},#{userId},#{ruleId},#{methodId},#{taskName},#{taskStatus},#{isType},#{taskDesc},#{dataId},#{dataPath},#{dataType},#{streamUrl},#{method},#{time})")
-    @Options(useGeneratedKeys=true, keyProperty="taskId")
-    int createMaskTask(MaskTask maskTask);
-
-
 
     @UpdateProvider(type = MaskTaskSql.class, method = "updateMaskTask")
     int updateMaskTask(MaskTask maskTask);

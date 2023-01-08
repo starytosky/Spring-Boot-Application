@@ -81,52 +81,61 @@ public class MaskTaskController {
         Date timer = new Date();
         maskTask.setTime(timer);
         // 查看
-        if (maskTaskService.updateMaskTask(maskTask) != 0) {
-            // 根据 规则id去拿规则数据，判断是字符串数据还是文件数据,并进行相应的数据处理
-            // 规则描述就是规则本身
-            String ruleDesc = maskTaskService.getMaskRuleByRuleId(maskTask.getRuleId());
-            if (ruleDesc.equals("")) {
-                log.info("任务" + maskTask.getTaskId() + "脱敏规则不正确");
-                return Result.build(500, "脱敏规则不正确");
-            } else {
-                // 检测原始文件是否存在
-                Boolean isFile = maskTaskService.isFile(maskTask.getDataPath());
-                if (!isFile) {
-                    return Result.build(500, "离线文件不存在");
+        if(maskTaskService.isExecTask()) {
+            if (maskTaskService.updateMaskTask(maskTask) != 0) {
+                // 根据 规则id去拿规则数据，判断是字符串数据还是文件数据,并进行相应的数据处理
+                // 规则描述就是规则本身
+                String ruleDesc = maskTaskService.getMaskRuleByRuleId(maskTask.getRuleId());
+                if (ruleDesc.equals("")) {
+                    log.info("任务" + maskTask.getTaskId() + "脱敏规则不正确");
+                    return Result.build(500, "脱敏规则不正确");
                 } else {
-                    // 判断限制内容是否符合格式
-                    if(maskTaskService.checkParameters(maskTask)) {
-                        if (maskTaskService.localVideoMask(maskTask,ruleDesc)) {
-                            return Result.ok("正在脱敏..");
-                        } else {
-                            return Result.build(500, "数据脱敏失败");
-                        }
-                    }else return Result.build(500, "限制内容格式不正确");
+                    // 检测原始文件是否存在
+                    Boolean isFile = maskTaskService.isFile(maskTask.getDataPath());
+                    if (!isFile) {
+                        return Result.build(500, "离线文件不存在");
+                    } else {
+                        // 判断限制内容是否符合格式
+                        if(maskTaskService.checkParameters(maskTask)) {
+                            if (maskTaskService.localVideoMask(maskTask,ruleDesc)) {
+                                return Result.ok("正在脱敏..");
+                            } else {
+                                return Result.build(500, "数据脱敏失败");
+                            }
+                        }else return Result.build(500, "限制内容格式不正确");
 
+                    }
                 }
-            }
-        } else return Result.build(500, "保存失败");
+            } else return Result.build(500, "保存失败");
+        }else return Result.build(500,"系统资源不足请稍后再试..");
+
     }
 
 
     @PostMapping("livevideomask")
     public Result liveVideo(@RequestBody MaskTask maskTask) throws IOException {
-        String ruleDesc = maskTaskService.getMaskRuleByRuleId(maskTask.getRuleId());
-        if (ruleDesc.equals("")) {
-            log.info("任务" + maskTask.getTaskId() + "脱敏规则不正确");
-            return Result.build(500, "脱敏规则不正确");
-        } else {
-            if(maskTaskService.checkParameters(maskTask)) {
-                if (maskTaskService.isRtmpStream(maskTask.getStreamUrl())) {
-                    boolean isLive = maskTaskService.liveVideoMask(maskTask,ruleDesc);
-                    if (isLive) {
-                        return Result.ok("正在脱敏..");
-                    } else return Result.build(500, "脱敏失败");
+        Date timer = new Date();
+        maskTask.setTime(timer);
+        if(maskTaskService.isExecTask()) {
+            if(maskTaskService.updateMaskTask(maskTask) != 0) {
+                String ruleDesc = maskTaskService.getMaskRuleByRuleId(maskTask.getRuleId());
+                if (ruleDesc.equals("")) {
+                    log.info("任务" + maskTask.getTaskId() + "脱敏规则不正确");
+                    return Result.build(500, "脱敏规则不正确");
                 } else {
-                    return Result.build(500, "请输入正确的脱敏地址！");
+                    if(maskTaskService.checkParameters(maskTask)) {
+                        if (maskTaskService.isRtmpStream(maskTask.getStreamUrl())) {
+                            boolean isLive = maskTaskService.liveVideoMask(maskTask,ruleDesc);
+                            if (isLive) {
+                                return Result.ok("正在脱敏..");
+                            } else return Result.build(500, "脱敏失败");
+                        } else {
+                            return Result.build(500, "请输入正确的脱敏地址！");
+                        }
+                    }else return Result.build(500, "限制内容格式不正确");
                 }
-            }else return Result.build(500, "限制内容格式不正确");
-        }
+            }else return Result.build(500, "保存失败");
+        } return Result.build(500,"系统资源不足请稍后再试..");
     }
 
     // 获取执行记录
@@ -166,6 +175,13 @@ public class MaskTaskController {
         if(localDataList != null) {
             return Result.build(localDataList,localDataCount, ResultCodeEnum.SUCCESS);
         }else return Result.build(500,"查询失败");
+    }
+
+
+    @GetMapping("test")
+    public Result test() {
+        maskTaskService.isExecTask();
+       return Result.ok(200);
     }
 
 

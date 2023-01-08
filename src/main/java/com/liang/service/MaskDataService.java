@@ -3,7 +3,7 @@ package com.liang.service;
 import com.liang.Rep.*;
 import com.liang.Res.MaskDataInfo;
 import com.liang.Res.MaskDataList;
-import com.liang.Res.Resources;
+//import com.liang.Res.Resources;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,5 +23,5 @@ public interface MaskDataService {
 
 	MaskDataInfo getMaskDataInfo(String maskDataId);
 
-	Resources getResourcesInfo(String resourceId) throws IOException;
+//	Resources getResourcesInfo(String resourceId) throws IOException;
 }

@@ -5,7 +5,7 @@ import com.liang.Mapper.sql.MaskDataSql;
 import com.liang.Rep.*;
 import com.liang.Res.MaskDataInfo;
 import com.liang.Res.MaskDataList;
-import com.liang.Res.Resources;
+//import com.liang.Res.Resources;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -57,7 +57,7 @@ public interface MaskDataDao {
 	MaskDataInfo getMaskDataInfo(String maskDataId);
 
 
-	// 获取原始静态数据详情
-	@Select("select * from resources where  resource_id=#{resourceId} and is_deleted=0")
-	Resources getResourcesInfo(String resourceId);
+//	// 获取原始静态数据详情
+//	@Select("select * from resources where  resource_id=#{resourceId} and is_deleted=0")
+//	Resources getResourcesInfo(String resourceId);
 }
