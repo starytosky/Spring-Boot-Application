@@ -176,6 +176,10 @@ public class ExecServiceImpl implements IExecService {
                             setLiveTaskStatus(2,liveVideoMask);
                             updateTaskStatus(1, liveVideoMask.getTaskId(), liveVideoMask.getExecId(), 2);
                         }
+                    }else {
+                        log.info("华为云服务异常");
+                        setLiveTaskStatus(2,liveVideoMask);
+                        updateTaskStatus(1, liveVideoMask.getTaskId(), liveVideoMask.getExecId(), 2);
                     }
                 }
             } catch (IOException | InterruptedException e) {
