@@ -30,6 +30,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
+import static com.liang.common.util.Tool.convertXmlToGpuObject;
+import static com.liang.common.util.Tool.getGpuXmlInfo;
+
 /**
  * @author liang
  * @Package com.liang.service.impl
@@ -114,7 +117,7 @@ public class MaskTaskServiceImpl implements MaskTaskService {
             if(!hset.contains(modelList[i]))
                 return false;
         }
-        if (maskTask.getMethod().toLowerCase().equals("cpu") || maskTask.getMethod().toLowerCase().equals("gpu")) {
+        if (maskTask.getMethod().toLowerCase().equals("cpu")) {
             return true;
         }else {
             return false;
@@ -383,6 +386,33 @@ public class MaskTaskServiceImpl implements MaskTaskService {
             return false;
         }
         return true;
+    }
+
+
+
+    @Override
+    public int isGpu() {
+        try {
+            String gpuXmlInfo = getGpuXmlInfo();
+            List<GPUInfo> gpuInfos = convertXmlToGpuObject(gpuXmlInfo);
+            float freeMaxMemory = -1;
+            int x =0;
+            for (int i=0;i<gpuInfos.size();i++) {
+                float currentFreeMemory = Float.parseFloat(gpuInfos.get(i).getFreeMemory().split(" ")[0]);
+                if(currentFreeMemory > freeMaxMemory) {
+                    freeMaxMemory = currentFreeMemory;
+                    x = i;
+                }
+            }
+            // 这边找到一个最大的 然后判断使用率 如果使用率超过一定的限制那么就将返回-1表示系统资源不足
+            if(gpuInfos.get(x).getUsageRate() > 0.85) {
+                return -1;
+            }
+            return x;
+        } catch (Exception e) {
+            log.error("获取gpu信息error , message : {}", e.getMessage(), e);
+            return -2;
+        }
     }
 
 

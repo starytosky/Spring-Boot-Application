@@ -3,7 +3,14 @@ package com.liang.common.util;
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.liang.Rep.GPUInfo;
+import com.liang.Rep.ProcessInfo;
+import io.micrometer.core.instrument.util.IOUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +21,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class Tool {
@@ -164,7 +174,75 @@ public class Tool {
 			log.error(sw.toString());
 		}
 		return cpuUsage;
+	}
 
+	// 获取gpu使用情况 并筛选出使用率最小的卡
+	/**
+	 * 通过命令xml格式显卡信息
+	 *
+	 * @return xml字符串
+	 * @throws IOException 获取显卡信息错误
+	 */
+	public static String getGpuXmlInfo() throws IOException {
+		Process process;
+		String result = "";
+		process = Runtime.getRuntime().exec("nvidia-smi -q -x");
+		try (InputStream inputStream = process.getInputStream()) {
+			result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+		}catch (Exception e) {
+			log.error("获取gpu信息失败", e.getMessage(), e);
+		}
+		if (process.isAlive()) {
+			process.destroy();
+		}
+		return result;
+	}
+
+	private static final String REG = "<!DOCTYPE.*.dtd\">";
+
+	/**
+	 * 获取gpu信息（暂时只支持nvidia-smi）
+	 *
+	 * @return gpu信息集合
+	 * @throws DocumentException xml解析错误
+	 */
+	public static List<GPUInfo> convertXmlToGpuObject(String xmlGpu) throws DocumentException {
+		//忽略dtd
+		xmlGpu = xmlGpu.replaceAll(REG, "");
+		Document document = DocumentHelper.parseText(xmlGpu);
+		List<Element> gpu = document.getRootElement().elements("gpu");
+		List<GPUInfo> gpuInfoList = new ArrayList<>();
+		gpu.forEach(element -> {
+			GPUInfo gpuInfo = new GPUInfo();
+			String uuid = element.element("uuid").getText();
+			Element fbMemoryUsage = element.element("fb_memory_usage");
+			String total = fbMemoryUsage.element("total").getText();
+			String used = fbMemoryUsage.element("used").getText();
+			String free = fbMemoryUsage.element("free").getText();
+			gpuInfo.setTotalMemory(total);
+			gpuInfo.setUsedMemory(used);
+			gpuInfo.setFreeMemory(free);
+			gpuInfo.setName(uuid);
+			Element processes = element.element("processes");
+			List<Element> infos = processes.elements("process_info");
+			List<ProcessInfo> processInfos = new ArrayList<>();
+			infos.forEach(info -> {
+				ProcessInfo processInfo = new ProcessInfo();
+				String pid = info.element("pid").getText();
+				String name = info.element("process_name").getText();
+				String usedMemory = info.element("used_memory").getText();
+				processInfo.setPid(pid);
+				processInfo.setName(name);
+				processInfo.setUsedMemory(usedMemory);
+				processInfos.add(processInfo);
+			});
+			gpuInfo.setProcessInfos(processInfos);
+			int intTotal = Integer.parseInt(total.split(" ")[0]);
+			int intUsed = Integer.parseInt(used.split(" ")[0]);
+			gpuInfo.setUsageRate((int) ((float) intUsed / intTotal * 100));
+			gpuInfoList.add(gpuInfo);
+		});
+		return gpuInfoList;
 	}
 
 }
