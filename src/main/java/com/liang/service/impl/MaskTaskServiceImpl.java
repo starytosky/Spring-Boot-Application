@@ -87,6 +87,9 @@ public class MaskTaskServiceImpl implements MaskTaskService {
     @Value("${maskLogPath}")
     private String maskLogPath;
 
+    @Value("${OutBucketName}")
+    private String OutBucketName;
+
     // 算法允许传入的参数
     private static final String[] checkmodelList = {"person","plate","sign","qrcode","idcard","nake","all"};
 
@@ -117,7 +120,7 @@ public class MaskTaskServiceImpl implements MaskTaskService {
             if(!hset.contains(modelList[i]))
                 return false;
         }
-        if (maskTask.getMethod().toLowerCase().equals("cpu")) {
+        if (maskTask.getMethod().toLowerCase().equals("cpu") || maskTask.getMethod().toLowerCase().equals("gpu")) {
             return true;
         }else {
             return false;
@@ -213,17 +216,18 @@ public class MaskTaskServiceImpl implements MaskTaskService {
         int cmd_len = modelList.length + std.length + 2;
         // 生成算法调用指令
         String[] cmdStr = setCmd(std,modelList,cmd_len,liveVideoMask.getMethod());
-        // 向obs创建文件夹
-        ObsUtil.CreateFolder(InBucketName,obsPath);
-        // 向数据库插入数据
         liveVideoMask.setObsPath(obsPath);
-        String logName = "live_"+ liveVideoMask.getExecId();
-        liveVideoMask.setLogPath(maskLogPath + logName+".log");
-        liveVideoMaskMapper.insert(liveVideoMask);
-        log.info("数据库返回信息" + liveVideoMask.getExecId());
-        // 执行异步操作
-        execService.liveVideoMask(cmdStr,liveVideoMask);
-        return true;
+        // 向obs创建文件夹
+        if(ObsUtil.CreateFolder(InBucketName,obsPath) && ObsUtil.CreateFolder(OutBucketName,liveVideoMask.getObsPath())) {
+            // 向数据库插入数据
+            String logName = "live_"+ liveVideoMask.getExecId();
+            liveVideoMask.setLogPath(maskLogPath + logName+".log");
+            liveVideoMaskMapper.insert(liveVideoMask);
+            log.info("数据库返回信息" + liveVideoMask.getExecId());
+            // 执行异步操作
+            execService.liveVideoMask(cmdStr,liveVideoMask);
+            return true;
+        }else return false;
     }
     // 构建命令语句
     public String[] setCmd(String[] std,String[] ModelList,Integer cmdLen,String method) {

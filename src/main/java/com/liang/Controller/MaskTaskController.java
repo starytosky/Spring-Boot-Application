@@ -80,42 +80,43 @@ public class MaskTaskController {
     public Result localVideo(@RequestBody MaskTask maskTask) throws IOException {
         Date timer = new Date();
         maskTask.setTime(timer);
-        // 查看cpu 使用情况
         if(maskTask.getMethod() != null) {
-            if(maskTask.getMethod().toLowerCase().equals("gpu")) {
-                int x = maskTaskService.isGpu();
-                if(x >= 0) {
-                    maskTask.setMethod(x+"");
-                }else if(x == -1) {
-                    return Result.build(500,"系统资源不足请稍后再试..");
-                }else return Result.build(500,"未获取到nvidia-gpu信息..");
-            }
-            if(maskTaskService.isExecTask()) {
-                if (maskTaskService.updateMaskTask(maskTask) != 0) {
-                    // 根据 规则id去拿规则数据，判断是字符串数据还是文件数据,并进行相应的数据处理
-                    // 规则描述就是规则本身
-                    String ruleDesc = maskTaskService.getMaskRuleByRuleId(maskTask.getRuleId());
-                    if (ruleDesc.equals("")) {
-                        log.info("任务" + maskTask.getTaskId() + "脱敏规则不正确");
-                        return Result.build(500, "脱敏规则不正确");
-                    } else {
-                        // 检测原始文件是否存在
-                        Boolean isFile = maskTaskService.isFile(maskTask.getDataPath());
-                        if (!isFile) {
-                            return Result.build(500, "离线文件不存在");
+            // 判断限制内容是否符合格式
+            if(maskTaskService.checkParameters(maskTask)) {
+                if(maskTask.getMethod().toLowerCase().equals("gpu")) {
+                    int x = maskTaskService.isGpu();
+                    if(x >= 0) {
+                        maskTask.setMethod(x+"");
+                    }else if(x == -1) {
+                        return Result.build(500,"系统资源不足请稍后再试..");
+                    }else return Result.build(500,"未获取到nvidia-gpu信息..");
+                }
+                // 查看cpu 使用情况
+                if(maskTaskService.isExecTask()) {
+                    if (maskTaskService.updateMaskTask(maskTask) != 0) {
+                        // 根据 规则id去拿规则数据，判断是字符串数据还是文件数据,并进行相应的数据处理
+                        // 规则描述就是规则本身
+                        String ruleDesc = maskTaskService.getMaskRuleByRuleId(maskTask.getRuleId());
+                        if (ruleDesc.equals("")) {
+                            log.info("任务" + maskTask.getTaskId() + "脱敏规则不正确");
+                            return Result.build(500, "脱敏规则不正确");
                         } else {
-                            // 判断限制内容是否符合格式
-                            if(maskTaskService.checkParameters(maskTask)) {
+                            // 检测原始文件是否存在
+                            Boolean isFile = maskTaskService.isFile(maskTask.getDataPath());
+                            if (!isFile) {
+                                return Result.build(500, "离线文件不存在");
+                            } else {
+
                                 if (maskTaskService.localVideoMask(maskTask,ruleDesc)) {
                                     return Result.ok("正在脱敏..");
                                 } else {
                                     return Result.build(500, "数据脱敏失败");
                                 }
-                            }else return Result.build(500, "限制内容格式不正确");
+                            }
                         }
-                    }
-                } else return Result.build(500, "保存失败");
-            }else return Result.build(500,"系统资源不足请稍后再试..");
+                    } else return Result.build(500, "保存失败");
+                }else return Result.build(500,"系统资源不足请稍后再试..");
+            }else return Result.build(500, "限制内容格式不正确");
         }else return Result.build(500,"请选择程序运行方式");
     }
 
@@ -125,22 +126,22 @@ public class MaskTaskController {
         Date timer = new Date();
         maskTask.setTime(timer);
         if(maskTask.getMethod() != null) {
-            if(maskTask.getMethod().toLowerCase().equals("gpu")) {
-                int x = maskTaskService.isGpu();
-                if(x >= 0) {
-                    maskTask.setMethod(x+"");
-                }else if(x == -1) {
-                    return Result.build(500,"系统资源不足请稍后再试..");
-                }else return Result.build(500,"未获取到nvidia-gpu信息..");
-            }
-            if(maskTaskService.isExecTask()) {
-                if(maskTaskService.updateMaskTask(maskTask) != 0) {
-                    String ruleDesc = maskTaskService.getMaskRuleByRuleId(maskTask.getRuleId());
-                    if (ruleDesc.equals("")) {
-                        log.info("任务" + maskTask.getTaskId() + "脱敏规则不正确");
-                        return Result.build(500, "脱敏规则不正确");
-                    } else {
-                        if(maskTaskService.checkParameters(maskTask)) {
+            if(maskTaskService.checkParameters(maskTask)) {
+                if(maskTask.getMethod().toLowerCase().equals("gpu")) {
+                    int x = maskTaskService.isGpu();
+                    if(x >= 0) {
+                        maskTask.setMethod(x+"");
+                    }else if(x == -1) {
+                        return Result.build(500,"系统资源不足请稍后再试..");
+                    }else return Result.build(500,"未获取到nvidia-gpu信息..");
+                }
+                if(maskTaskService.isExecTask()) {
+                    if(maskTaskService.updateMaskTask(maskTask) != 0) {
+                        String ruleDesc = maskTaskService.getMaskRuleByRuleId(maskTask.getRuleId());
+                        if (ruleDesc.equals("")) {
+                            log.info("任务" + maskTask.getTaskId() + "脱敏规则不正确");
+                            return Result.build(500, "脱敏规则不正确");
+                        } else {
                             if (maskTaskService.isRtmpStream(maskTask.getStreamUrl())) {
                                 boolean isLive = maskTaskService.liveVideoMask(maskTask,ruleDesc);
                                 if (isLive) {
@@ -149,10 +150,10 @@ public class MaskTaskController {
                             } else {
                                 return Result.build(500, "请输入正确的脱敏地址！");
                             }
-                        }else return Result.build(500, "限制内容格式不正确");
-                    }
-                }else return Result.build(500, "保存失败");
-            } return Result.build(500,"系统资源不足请稍后再试..");
+                        }
+                    }else return Result.build(500, "保存失败");
+                } return Result.build(500,"系统资源不足请稍后再试..");
+            }else return Result.build(500, "限制内容格式不正确");
         }else return Result.build(500,"请选择程序运行方式");
     }
 

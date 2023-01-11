@@ -128,9 +128,9 @@ public class ExecServiceImpl implements IExecService {
                             isupload = ObsUtil.uploadFile(InBucketName, uploadFileName, filePath);
                         }
                         if (isupload) {
-                            // 创建输出桶路径文件夹
-                            ObsUtil.CreateFolder(OutBucketName,liveVideoMask.getObsPath());
-                            log.info("输出桶路径文件夹创建完成");
+//                            // 创建输出桶路径文件夹
+//                            ObsUtil.CreateFolder(OutBucketName,liveVideoMask.getObsPath());
+//                            log.info("输出桶路径文件夹创建完成");
                             Long trancoding = MpcUtil.createTranscodingTask(InBucketName, OutBucketName, HuaWeiLocation, uploadFileName, liveVideoMask.getObsPath(), liveVideoMask.getOutFilename());
                             if (trancoding != -1) {
                                 TimerTask task = new TimerTask() {
