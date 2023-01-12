@@ -64,8 +64,15 @@ public class ObsUtil {
      */
 
     public static boolean CreateFolder(String bucketName,String folderPath) {
-        obsClient.putObject(bucketName, folderPath, new ByteArrayInputStream(new byte[0]));
-        return true;
+        try {
+            obsClient.putObject(bucketName, folderPath, new ByteArrayInputStream(new byte[0]));
+            log.info(folderPath+"文件夹创建完成");
+            return true;
+        }catch (ObsException e){
+            log.info("Error Code:" + e.getErrorCode());
+            log.info(folderPath+"文件夹创建失败");
+            return false;
+        }
     }
 
     /*

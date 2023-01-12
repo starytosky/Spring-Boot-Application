@@ -71,7 +71,7 @@ MaskRulePath: /home/ysjs3/java/upfile/maskRuleFile
 uploadFolder: /home/ysjs3/java/upfile/
 #uploadFolder: D:\\uploadFiles\\
 # ??python????
-
+# 脱敏任务日志保存地址
 maskLogPath: /home/ysjs3/java/logbacktest/
 
 LocalCodePath : /home/ysjs3/java/code/localVideoMask.py
